@@ -1,0 +1,4 @@
+rootProject.name = 'json2xml'
+include 'lexer'
+include 'parser'
+

@@ -1,0 +1,5 @@
+out/
+.*/
+gradlew
+gradlew.bat
+gradle/*
