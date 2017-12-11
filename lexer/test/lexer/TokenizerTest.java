@@ -51,10 +51,10 @@ class TokenizerTest {
     // TODO add expect exception
     void shouldNotTokenizeValuesWithCorruptedEscapeCharacters() {
         Tokenizer tokenizer = new Tokenizer(new StringSource());
-        Executable toExec = () -> {
-            ((StringSource) tokenizer.getSource()).setInputString(
+        ((StringSource) tokenizer.getSource()).setInputString(
                 "{\"key\" : \"valueWithMissing char\\X\", \"key1\":\"value with \\ttab\"}"
-            );
+        );
+        Executable toExec = () -> {
             tokenizer.tokenize();
         };
         assertThrows(RuntimeException.class, toExec);
@@ -101,10 +101,13 @@ class TokenizerTest {
     @Test
     void shouldNotTokenizeNumbersWithLeadingZeroes() {
         Tokenizer tokenizer = new Tokenizer(new StringSource());
-        ((StringSource) tokenizer.getSource()).setInputString(
-                "{\"key\" : 0666   , \"keyAfterNumber\" : \"random\"}"
-        );
-        tokenizer.tokenize().stream().forEach(System.out::println);
+        Executable toExec = () -> {
+            ((StringSource) tokenizer.getSource()).setInputString(
+                    "{\"key\" : 0666   , \"keyAfterNumber\" : \"random\"}"
+            );
+            tokenizer.tokenize().stream().forEach(System.out::println);
+        };
+        assertThrows(RuntimeException.class, toExec);
     }
 
     @Test

@@ -53,8 +53,4 @@ public class StringSource implements Source {
         this.inputString = inputString;
         this.curLen = inputString.length();
     }
-
-    protected void resetCursor() {
-        this.idx = -1;
-    }
 }
