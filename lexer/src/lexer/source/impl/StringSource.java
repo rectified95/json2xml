@@ -19,10 +19,12 @@ public class StringSource implements Source {
         curLen = inputString.length();
     }
 
+    @Override
     public char getNext() {
         return hasNext() ? inputString.charAt(++idx) : '\0';
     }
 
+    @Override
     public char getNextNonBlank() {
         char next = getNext();
         while (next == ' ' || next == '\t' || next == '\n' || next == '\r') {
@@ -31,12 +33,20 @@ public class StringSource implements Source {
         return next;
     }
 
+    @Override
     public char getCurrent() {
         return inputString.charAt(idx);
     }
 
+    @Override
+    // TODO change this to account for trailing blanks eg. "{XXX}    " -> shoud return false after '}'
     public boolean hasNext() {
         return idx+1 < curLen;
+    }
+
+    @Override
+    public void rollbackCursor() {
+        --this.idx;
     }
 
     public void setInputString(String inputString) {

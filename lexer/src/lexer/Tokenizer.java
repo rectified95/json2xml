@@ -1,6 +1,7 @@
 package lexer;
 
 import lexer.matchers.Matcher;
+import lexer.matchers.impl.NumberMatcher;
 import lexer.matchers.impl.SpecialCharacterMatcher;
 import lexer.matchers.impl.StringMatcher;
 import lexer.source.Source;
@@ -49,6 +50,8 @@ public class Tokenizer {
     private void initializeMatcherMap() {
         Matcher specialCharacterMatcher = new SpecialCharacterMatcher();
         Matcher stringMatcher = new StringMatcher();
+        Matcher numberMatcher = new NumberMatcher();
+
         matcherMap.put('"', stringMatcher);
         matcherMap.put('{', specialCharacterMatcher);
         matcherMap.put('}', specialCharacterMatcher);
@@ -56,6 +59,17 @@ public class Tokenizer {
         matcherMap.put(']', specialCharacterMatcher);
         matcherMap.put(',', specialCharacterMatcher);
         matcherMap.put(':', specialCharacterMatcher);
+
+        matcherMap.put('1', numberMatcher);
+        matcherMap.put('2', numberMatcher);
+        matcherMap.put('3', numberMatcher);
+        matcherMap.put('4', numberMatcher);
+        matcherMap.put('5', numberMatcher);
+        matcherMap.put('6', numberMatcher);
+        matcherMap.put('7', numberMatcher);
+        matcherMap.put('8', numberMatcher);
+        matcherMap.put('9', numberMatcher);
+        matcherMap.put('-', numberMatcher);
     }
 
     public Source getSource() {

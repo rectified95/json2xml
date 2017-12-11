@@ -8,4 +8,5 @@ public interface Source {
     char getNextNonBlank();
     char getCurrent();
     boolean hasNext();
+    void rollbackCursor();
 }
