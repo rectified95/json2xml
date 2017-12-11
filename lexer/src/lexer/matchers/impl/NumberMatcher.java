@@ -8,7 +8,7 @@ import lexer.source.Source;
 /**
  * Created by Igor Klemenski on 10.12.17.
  */
-// TODO ogarnac spacje po liczbach
+
 public class NumberMatcher implements Matcher {
     @Override
     public Token match(Source source) {
@@ -60,11 +60,7 @@ public class NumberMatcher implements Matcher {
                     }
                     break;
                 case 3:
-                    if (nextChar == 'e' || nextChar == 'E') {
-                        state = 5;
-                        isStateFinal = false;
-                        sb.append(nextChar);
-                    } else if (!Character.isDigit(nextChar)) {
+                    if (!Character.isDigit(nextChar)) {
                         isCharKnown = false;
                     } else {
                         state = 4;
@@ -83,11 +79,14 @@ public class NumberMatcher implements Matcher {
                         sb.append(nextChar);
                     }
                     break;
-                    // TODO add case without +/-
                 case 5:
                     if (nextChar == '+' || nextChar == '-') {
                         state = 6;
                         isStateFinal = false;
+                        sb.append(nextChar);
+                    } else if (Character.isDigit(nextChar)) {
+                        state = 7;
+                        isStateFinal = true;
                         sb.append(nextChar);
                     } else {
                         isCharKnown = false;

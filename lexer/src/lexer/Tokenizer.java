@@ -44,7 +44,11 @@ public class Tokenizer {
 
     private Token getNextToken() {
         currentChar = source.getNextNonBlank();
-        return matcherMap.get(currentChar).match(source);
+        Matcher matcher = matcherMap.get(currentChar);
+        if (matcher == null) {
+            throw new RuntimeException("cannot recognize token - invalid input");
+        }
+        return matcher.match(source);
     }
 
     private void initializeMatcherMap() {
