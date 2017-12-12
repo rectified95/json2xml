@@ -36,7 +36,7 @@ public class Tokenizer {
 
     public List<Token> tokenize() {
         List<Token> tokenList = new LinkedList<>();
-        while (source.hasNext()) {
+        while (source.hasNextNonBlank()) {
             tokenList.add(getNextToken());
         }
         return tokenList;
@@ -78,9 +78,5 @@ public class Tokenizer {
 
     public Source getSource() {
         return source;
-    }
-
-    public void reset(Source source) {
-        this.source = source;
     }
 }

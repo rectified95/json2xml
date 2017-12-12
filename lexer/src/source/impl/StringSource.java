@@ -21,7 +21,10 @@ public class StringSource implements Source {
 
     @Override
     public char getNext() {
-        return hasNext() ? inputString.charAt(++idx) : '\0';
+        if (!hasNext()) {
+            throw new RuntimeException("no more characters");
+        }
+        return inputString.charAt(++idx);
     }
 
     @Override
@@ -39,9 +42,22 @@ public class StringSource implements Source {
     }
 
     @Override
-    // TODO change this to account for trailing blanks eg. "{XXX}    " -> shoud return false after '}'
     public boolean hasNext() {
-        return idx+1 < curLen;
+        return (idx + 1) < curLen;
+    }
+
+    public boolean hasNextNonBlank() {
+        char next;
+        boolean hasNextNonBlank = false;
+        while (hasNext()) {
+            next = getNext();
+            if (next != ' ' && next != '\t' && next != '\n' && next != '\r') {
+                hasNextNonBlank = true;
+                rollbackCursor();
+                break;
+            }
+        }
+        return hasNextNonBlank;
     }
 
     @Override

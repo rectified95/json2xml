@@ -43,6 +43,11 @@ public class FileSource implements Source {
     }
 
     @Override
+    public boolean hasNextNonBlank() {
+        return source.hasNextNonBlank();
+    }
+
+    @Override
     public void rollbackCursor() {
         source.rollbackCursor();
     }
