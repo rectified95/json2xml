@@ -1,9 +1,14 @@
 package lexer;
 
-import lexer.source.impl.StringSource;
+import source.impl.FileSource;
+import source.impl.StringSource;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.function.Executable;
+import tokenizer.Tokenizer;
+
+import java.io.IOException;
+import java.net.URISyntaxException;
 
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
@@ -174,5 +179,17 @@ class TokenizerTest {
                         "}"
         );
         tokenizer.tokenize().stream().forEach(System.out::println);
+    }
+
+    @Test
+    void shouldTokenizeFromFile() {
+        try {
+            Tokenizer tokenizer = new Tokenizer(new FileSource(
+                    "/home/igor/Documents/projects/json2xml/lexer/test/lexer/test.json")
+            );
+            tokenizer.tokenize().stream().forEach(System.out::println);
+        } catch (IOException | URISyntaxException e) {
+            e.printStackTrace();
+        }
     }
 }

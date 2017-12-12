@@ -1,12 +1,11 @@
-package lexer.matchers.impl;
+package matchers.impl;
 
-import lexer.Token;
-import lexer.TokenType;
-import lexer.matchers.Matcher;
-import lexer.source.Source;
+import tokenizer.Token;
+import tokenizer.TokenType;
+import matchers.Matcher;
+import source.Source;
 
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.Set;
 import java.util.TreeSet;
 
@@ -21,7 +20,7 @@ public class StringMatcher implements Matcher {
 
     @Override
     // TODO add hex lexing
-    // TODO account for remature string end case eg. {"key":"val"
+    // TODO account for premature string end case eg. {"key":"val"
     public Token match(Source source) {
         StringBuilder sb = new StringBuilder();
         char nextChar = source.getNext();

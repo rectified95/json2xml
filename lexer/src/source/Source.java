@@ -1,4 +1,4 @@
-package lexer.source;
+package source;
 
 /**
  * Created by Igor Klemenski on 10.12.17.

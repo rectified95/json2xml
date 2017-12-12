@@ -1,10 +1,10 @@
-package lexer;
+package tokenizer;
 
-import lexer.matchers.Matcher;
-import lexer.matchers.impl.NumberMatcher;
-import lexer.matchers.impl.SpecialCharacterMatcher;
-import lexer.matchers.impl.StringMatcher;
-import lexer.source.Source;
+import matchers.Matcher;
+import matchers.impl.NumberMatcher;
+import matchers.impl.SpecialCharacterMatcher;
+import matchers.impl.StringMatcher;
+import source.Source;
 
 import java.util.*;
 

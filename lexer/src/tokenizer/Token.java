@@ -1,4 +1,4 @@
-package lexer;
+package tokenizer;
 
 /**
  * Created by igor on 10.12.17.

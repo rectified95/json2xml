@@ -1,9 +1,9 @@
-package lexer.matchers.impl;
+package matchers.impl;
 
-import lexer.Token;
-import lexer.TokenType;
-import lexer.matchers.Matcher;
-import lexer.source.Source;
+import tokenizer.Token;
+import tokenizer.TokenType;
+import matchers.Matcher;
+import source.Source;
 
 import java.util.ArrayList;
 import java.util.List;

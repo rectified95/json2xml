@@ -1,6 +1,6 @@
-package lexer.source.impl;
+package source.impl;
 
-import lexer.source.Source;
+import source.Source;
 
 /**
  * Created by Igor Klemenski on 09.12.17.

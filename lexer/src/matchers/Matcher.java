@@ -1,7 +1,7 @@
-package lexer.matchers;
+package matchers;
 
-import lexer.Token;
-import lexer.source.Source;
+import tokenizer.Token;
+import source.Source;
 
 /**
  * Created by igor on 10.12.17.
