@@ -7,14 +7,14 @@ import source.Source;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.function.Function;
+import java.util.function.Consumer;
 
 /**
  * Created by Igor Klemenski on 10.12.17.
  */
 
 public class NumberMatcher implements Matcher {
-    private List<Function> stateHandlerList = new ArrayList<>();
+    private List<Consumer> stateHandlerList = new ArrayList<>();
 
     public NumberMatcher() {
         initializeStateHandlerList();
@@ -28,7 +28,7 @@ public class NumberMatcher implements Matcher {
         );
 
         while (matcherState.isCharKnown()) {
-            stateHandlerList.get(matcherState.getState()).apply(matcherState);
+            stateHandlerList.get(matcherState.getState()).accept(matcherState);
             if (matcherState.isCharKnown()) {
                 if (source.hasNext()) {
                     matcherState.setNextChar(source.getNext());
@@ -55,7 +55,7 @@ public class NumberMatcher implements Matcher {
         stateHandlerList.add(handleState7);
     }
 
-    private Function<NumberMatcherState, NumberMatcherState> handleState0 = s -> {
+    private Consumer<NumberMatcherState> handleState0 = s -> {
         char nextChar = s.getNextChar();
         if (s.getNextChar() == '0') {
             s.setState(1);
@@ -70,10 +70,9 @@ public class NumberMatcher implements Matcher {
         } else {
             s.setCharKnown(false);
         }
-        return s;
     };
 
-    private Function<NumberMatcherState, NumberMatcherState> handleState1 = s -> {
+    private Consumer<NumberMatcherState> handleState1 = s -> {
         char nextChar = s.getNextChar();
         if (nextChar == '.') {
             s.setState(3);
@@ -82,10 +81,9 @@ public class NumberMatcher implements Matcher {
         } else {
             s.setCharKnown(false);
         }
-        return s;
     };
 
-    private Function<NumberMatcherState, NumberMatcherState> handleState2 = s -> {
+    private Consumer<NumberMatcherState> handleState2 = s -> {
         char nextChar = s.getNextChar();
         if (nextChar == '.') {
             s.setState(3);
@@ -100,10 +98,9 @@ public class NumberMatcher implements Matcher {
         } else {
             s.getSb().append(nextChar);
         }
-        return s;
     };
 
-    private Function<NumberMatcherState, NumberMatcherState> handleState3 = s -> {
+    private Consumer<NumberMatcherState> handleState3 = s -> {
         char nextChar = s.getNextChar();
         if (!Character.isDigit(nextChar)) {
             s.setCharKnown(false);
@@ -112,10 +109,9 @@ public class NumberMatcher implements Matcher {
             s.setStateFinal(true);
             s.getSb().append(nextChar);
         }
-        return s;
     };
 
-    private Function<NumberMatcherState, NumberMatcherState> handleState4 = s -> {
+    private Consumer<NumberMatcherState> handleState4 = s -> {
         char nextChar = s.getNextChar();
         if (nextChar == 'e' || nextChar == 'E') {
             s.setState(5);
@@ -126,10 +122,9 @@ public class NumberMatcher implements Matcher {
         } else {
             s.getSb().append(nextChar);
         }
-        return s;
     };
 
-    private Function<NumberMatcherState, NumberMatcherState> handleState5 = s -> {
+    private Consumer<NumberMatcherState> handleState5 = s -> {
         char nextChar = s.getNextChar();
         if (nextChar == '+' || nextChar == '-') {
             s.setState(6);
@@ -142,10 +137,9 @@ public class NumberMatcher implements Matcher {
         } else {
             s.setCharKnown(false);
         }
-        return s;
     };
 
-    private Function<NumberMatcherState, NumberMatcherState> handleState6 = s -> {
+    private Consumer<NumberMatcherState> handleState6 = s -> {
         char nextChar = s.getNextChar();
         if (Character.isDigit(nextChar)) {
             s.setState(7);
@@ -154,17 +148,15 @@ public class NumberMatcher implements Matcher {
         } else {
             s.setCharKnown(false);
         }
-        return s;
     };
 
-    private Function<NumberMatcherState, NumberMatcherState> handleState7 = s -> {
+    private Consumer<NumberMatcherState> handleState7 = s -> {
         char nextChar = s.getNextChar();
         if (!Character.isDigit(nextChar)) {
             s.setCharKnown(false);
         } else {
             s.getSb().append(nextChar);
         }
-        return s;
     };
 
     class NumberMatcherState {
