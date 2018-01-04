@@ -127,11 +127,19 @@ class TokenizerTest {
     }
 
     @Test
+    void shouldTokenizeKeywords() {
+        Tokenizer tokenizer = new Tokenizer(new StringSource());
+        ((StringSource) tokenizer.getSource()).setInputString(
+                "{\"key\" : true , \"ssd\":null, \"ssss\" :1233 , \"xdxd\":false \n}"
+        );
+        tokenizer.tokenize().stream().forEach(System.out::println);
+    }
+
+    @Test
     void shouldTokenizeNumbersWithExponent() {
         Tokenizer tokenizer = new Tokenizer(new StringSource());
         ((StringSource) tokenizer.getSource()).setInputString(
-                "{\"key\" : 666e+6   , \"keyMinus\" : 666e-9  " +
-                        "}"
+                "{\"key\" : 666e+6   , \"keyMinus\" : 666e-9  \n}"
         );
         tokenizer.tokenize().stream().forEach(System.out::println);
     }

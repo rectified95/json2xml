@@ -1,6 +1,7 @@
 package tokenizer;
 
 import matchers.Matcher;
+import matchers.impl.KeywordMatcher;
 import matchers.impl.NumberMatcher;
 import matchers.impl.SpecialCharacterMatcher;
 import matchers.impl.StringMatcher;
@@ -59,26 +60,20 @@ public class Tokenizer {
         Matcher specialCharacterMatcher = new SpecialCharacterMatcher();
         Matcher stringMatcher = new StringMatcher();
         Matcher numberMatcher = new NumberMatcher();
+        Matcher keywordMatcher = new KeywordMatcher();
 
         matcherMap.put('"', stringMatcher);
-        matcherMap.put('{', specialCharacterMatcher);
-        matcherMap.put('}', specialCharacterMatcher);
-        matcherMap.put('[', specialCharacterMatcher);
-        matcherMap.put(']', specialCharacterMatcher);
-        matcherMap.put(',', specialCharacterMatcher);
-        matcherMap.put(':', specialCharacterMatcher);
-
-        matcherMap.put('0', numberMatcher);
-        matcherMap.put('1', numberMatcher);
-        matcherMap.put('2', numberMatcher);
-        matcherMap.put('3', numberMatcher);
-        matcherMap.put('4', numberMatcher);
-        matcherMap.put('5', numberMatcher);
-        matcherMap.put('6', numberMatcher);
-        matcherMap.put('7', numberMatcher);
-        matcherMap.put('8', numberMatcher);
-        matcherMap.put('9', numberMatcher);
         matcherMap.put('-', numberMatcher);
+        for (int digit = 0; digit < 10; ++digit) {
+            matcherMap.put(Character.forDigit(digit, 10), numberMatcher);
+        }
+        for (Character c : tokenMap.keySet()) {
+            matcherMap.put(c, specialCharacterMatcher);
+        }
+        for (char c = 'A'; c < 'Z'; ++c) {
+            matcherMap.put(c, keywordMatcher);
+            matcherMap.put((char)(c + 32), keywordMatcher);
+        }
     }
 
     public Source getSource() {

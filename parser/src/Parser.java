@@ -25,7 +25,7 @@ public class Parser {
     }
 
     private boolean value() {
-        return valueString() || valueNumber() || valueObject() || valueArray();
+        return valueString() || valueNumber() || valueObject() || valueArray() || valueKeyword();
     }
 
     private boolean valueString() {
@@ -44,9 +44,8 @@ public class Parser {
         return array();
     }
 
-    // TODO add true, false, null
     private boolean valueKeyword() {
-        return true;
+        return term(TokenType.KEYWORD);
     }
 
     private boolean elements() {

@@ -7,5 +7,6 @@ public enum TokenType {
     LCURL, RCURL,
     QUOTE, COLON,
     COMMA, STRING,
-    NUMBER, LBRACKET, RBRACKET;
+    NUMBER, LBRACKET,
+    RBRACKET, KEYWORD;
 }
