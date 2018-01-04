@@ -42,13 +42,17 @@ public class Tokenizer {
         return tokenList;
     }
 
-    private Token getNextToken() {
+    public Token getNextToken() {
         currentChar = source.getNextNonBlank();
         Matcher matcher = matcherMap.get(currentChar);
         if (matcher == null) {
             throw new RuntimeException("cannot recognize token - invalid input");
         }
         return matcher.match(source);
+    }
+
+    public String getNextTokenValue() {
+        return getNextToken().getValue();
     }
 
     private void initializeMatcherMap() {
@@ -64,6 +68,7 @@ public class Tokenizer {
         matcherMap.put(',', specialCharacterMatcher);
         matcherMap.put(':', specialCharacterMatcher);
 
+        matcherMap.put('0', numberMatcher);
         matcherMap.put('1', numberMatcher);
         matcherMap.put('2', numberMatcher);
         matcherMap.put('3', numberMatcher);

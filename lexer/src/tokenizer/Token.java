@@ -24,4 +24,22 @@ public class Token {
     public String toString() {
         return this.type + " - " + this.value;
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        Token token = (Token) o;
+
+        if (type != token.type) return false;
+        return value.equals(token.value);
+    }
+
+    @Override
+    public int hashCode() {
+        int result = type.hashCode();
+        result = 31 * result + value.hashCode();
+        return result;
+    }
 }
