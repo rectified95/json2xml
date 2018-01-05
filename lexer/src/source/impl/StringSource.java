@@ -1,6 +1,7 @@
 package source.impl;
 
 import source.Source;
+import tokenizer.TokenizerException;
 
 /**
  * Created by Igor Klemenski on 09.12.17.
@@ -22,7 +23,7 @@ public class StringSource implements Source {
     @Override
     public char getNext() {
         if (!hasNext()) {
-            throw new RuntimeException("no more characters");
+            throw new TokenizerException("no more characters");
         }
         return inputString.charAt(++idx);
     }
@@ -53,7 +54,7 @@ public class StringSource implements Source {
             next = getNext();
             if (next != ' ' && next != '\t' && next != '\n' && next != '\r') {
                 hasNextNonBlank = true;
-                rollbackCursor();
+                reverseCursor();
                 break;
             }
         }
@@ -61,8 +62,13 @@ public class StringSource implements Source {
     }
 
     @Override
-    public void rollbackCursor() {
+    public void reverseCursor() {
         --this.idx;
+    }
+
+    @Override
+    public void rollbackCursor() {
+
     }
 
     public void setInputString(String inputString) {

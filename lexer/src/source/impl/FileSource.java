@@ -48,7 +48,12 @@ public class FileSource implements Source {
     }
 
     @Override
+    public void reverseCursor() {
+        source.reverseCursor();
+    }
+
+    @Override
     public void rollbackCursor() {
-        source.rollbackCursor();
+
     }
 }

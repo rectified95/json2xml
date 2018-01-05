@@ -4,6 +4,7 @@ import tokenizer.Token;
 import tokenizer.TokenType;
 import matchers.Matcher;
 import source.Source;
+import tokenizer.TokenizerException;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -32,14 +33,16 @@ public class NumberMatcher implements Matcher {
             if (matcherState.isCharKnown()) {
                 if (source.hasNext()) {
                     matcherState.setNextChar(source.getNext());
+                } else {
+                    break;
                 }
             } else {
-                source.rollbackCursor();
+                source.reverseCursor();
                 break;
             }
         }
         if (!matcherState.isStateFinal()) {
-            throw new RuntimeException("incorrect JSON string - too short");
+            throw new TokenizerException("incorrect JSON string - too short");
         }
         return new Token(TokenType.NUMBER, sb.toString());
     }

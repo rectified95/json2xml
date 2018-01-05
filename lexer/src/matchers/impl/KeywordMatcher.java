@@ -4,6 +4,7 @@ import matchers.Matcher;
 import source.Source;
 import tokenizer.Token;
 import tokenizer.TokenType;
+import tokenizer.TokenizerException;
 
 import java.util.Arrays;
 import java.util.Set;
@@ -23,7 +24,11 @@ public class KeywordMatcher implements Matcher {
             sb.append(nextChar);
             nextChar = source.getNext();
         }
-        source.rollbackCursor();
-        return new Token(TokenType.KEYWORD, sb.toString());
+        source.reverseCursor();
+        String matchResult = sb.toString();
+        if (!keywords.contains(matchResult)) {
+            throw new TokenizerException("invalid input - cannot match keyword: " + matchResult);
+        }
+        return new Token(TokenType.KEYWORD, matchResult);
     }
 }

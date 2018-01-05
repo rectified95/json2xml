@@ -53,16 +53,20 @@ class TokenizerTest {
     }
 
     @Test
-    // TODO add expect exception
     void shouldNotTokenizeValuesWithCorruptedEscapeCharacters() {
         Tokenizer tokenizer = new Tokenizer(new StringSource());
         ((StringSource) tokenizer.getSource()).setInputString(
                 "{\"key\" : \"valueWithMissing char\\X\", \"key1\":\"value with \\ttab\"}"
         );
-        Executable toExec = () -> {
-            tokenizer.tokenize();
-        };
+        Executable toExec = () -> tokenizer.tokenize();
         assertThrows(RuntimeException.class, toExec);
+    }
+
+    @Test
+    void shouldTokenizePair() {
+        Tokenizer tokenizer = new Tokenizer(new StringSource());
+        ((StringSource) tokenizer.getSource()).setInputString("\"positive\" : 766");
+        tokenizer.tokenize().stream().forEach(System.out::println);
     }
 
     @Test
@@ -102,9 +106,8 @@ class TokenizerTest {
     }
 
     @Test
-    @Disabled
-    // this should pass, as it is the job of the lexer to reject this input
-    void shouldNotTokenizeNumbersContainingBlanks() {
+    // this should pass, as it is the job of the parser to reject this input
+    void shouldTokenizeConsecutiveNumbersContainingBlanks() {
         Tokenizer tokenizer = new Tokenizer(new StringSource());
         ((StringSource) tokenizer.getSource()).setInputString(
                 "{\"positive\" : 666   6, \"negative\" : -666 }"
@@ -123,7 +126,6 @@ class TokenizerTest {
             tokenizer.tokenize().stream().forEach(System.out::println);
         };
         toExec.execute();
-//        assertThrows(RuntimeException.class, toExec);
     }
 
     @Test
@@ -166,6 +168,24 @@ class TokenizerTest {
         Tokenizer tokenizer = new Tokenizer(new StringSource());
         ((StringSource) tokenizer.getSource()).setInputString(
                 "{\"key\" : 123.45e+64   , \"otherKey\" : -23.09E-98 }"
+        );
+        tokenizer.tokenize().stream().forEach(System.out::println);
+    }
+
+    @Test
+    void shouldNotTokenizeStringWithoutQuotes() {
+        Tokenizer tokenizer = new Tokenizer(new StringSource());
+        ((StringSource) tokenizer.getSource()).setInputString(
+                "{\"key\" : 45   , \"otherKey\" : s }"
+        );
+        tokenizer.tokenize().stream().forEach(System.out::println);
+    }
+
+    @Test
+    void shouldNotTokenizeDollarChar() {
+        Tokenizer tokenizer = new Tokenizer(new StringSource());
+        ((StringSource) tokenizer.getSource()).setInputString(
+                "{\"key\" : $   , \"otherKey\" : s }"
         );
         tokenizer.tokenize().stream().forEach(System.out::println);
     }

@@ -47,7 +47,7 @@ public class Tokenizer {
         currentChar = source.getNextNonBlank();
         Matcher matcher = matcherMap.get(currentChar);
         if (matcher == null) {
-            throw new RuntimeException("cannot recognize token - invalid input");
+            throw new TokenizerException("cannot recognize token - invalid input");
         }
         return matcher.match(source);
     }
@@ -70,7 +70,8 @@ public class Tokenizer {
         for (Character c : tokenMap.keySet()) {
             matcherMap.put(c, specialCharacterMatcher);
         }
-        for (char c = 'A'; c < 'Z'; ++c) {
+        // TODO wywalic wielkie litery, bo keywordy sa tylko małą pisane
+        for (char c = 'A'; c <= 'Z'; ++c) {
             matcherMap.put(c, keywordMatcher);
             matcherMap.put((char)(c + 32), keywordMatcher);
         }

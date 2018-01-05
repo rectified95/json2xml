@@ -4,6 +4,7 @@ import tokenizer.Token;
 import tokenizer.TokenType;
 import matchers.Matcher;
 import source.Source;
+import tokenizer.TokenizerException;
 
 import java.util.Arrays;
 import java.util.Set;
@@ -29,8 +30,7 @@ public class StringMatcher implements Matcher {
                 sb.append(nextChar);
                 nextChar = source.getNext();
                 if (!controlCharacterSet.contains(nextChar)) {
-                    // TODO define own exception class
-                    throw new RuntimeException(
+                    throw new TokenizerException(
                             "invalid json string - missing control character after escape '\\' character"
                     );
                 }

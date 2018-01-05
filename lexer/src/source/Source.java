@@ -9,5 +9,6 @@ public interface Source {
     char getCurrent();
     boolean hasNext();
     boolean hasNextNonBlank();
+    void reverseCursor();
     void rollbackCursor();
 }
