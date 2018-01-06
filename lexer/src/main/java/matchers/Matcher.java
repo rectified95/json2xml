@@ -1,6 +1,6 @@
 package matchers;
 
-import tokenizer.Token;
+import tokenizer.token.Token;
 import source.Source;
 
 /**

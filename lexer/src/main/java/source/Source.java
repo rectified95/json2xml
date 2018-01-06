@@ -11,4 +11,6 @@ public interface Source {
     boolean hasNextNonBlank();
     void reverseCursor();
     void rollbackCursor();
+    int getLineNumber();
+    int getLineIdx();
 }

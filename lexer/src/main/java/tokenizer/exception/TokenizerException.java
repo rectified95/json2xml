@@ -1,4 +1,4 @@
-package tokenizer;
+package tokenizer.exception;
 
 /**
  * Created by Igor Klemenski on 05.01.18.

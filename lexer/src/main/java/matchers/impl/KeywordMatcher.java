@@ -2,9 +2,9 @@ package matchers.impl;
 
 import matchers.Matcher;
 import source.Source;
-import tokenizer.Token;
-import tokenizer.TokenType;
-import tokenizer.TokenizerException;
+import tokenizer.token.Token;
+import tokenizer.token.TokenType;
+import tokenizer.exception.TokenizerException;
 
 import java.util.Arrays;
 import java.util.Set;

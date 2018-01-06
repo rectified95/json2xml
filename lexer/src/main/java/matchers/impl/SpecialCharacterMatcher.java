@@ -2,7 +2,7 @@ package matchers.impl;
 
 import matchers.Matcher;
 import source.Source;
-import tokenizer.Token;
+import tokenizer.token.Token;
 import tokenizer.Tokenizer;
 
 /**

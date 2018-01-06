@@ -1,10 +1,9 @@
 package lexer;
 
-import source.impl.FileSource;
-import source.impl.StringSource;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.function.Executable;
+import source.impl.FileSource;
+import source.impl.StringSource;
 import tokenizer.Tokenizer;
 
 import java.io.IOException;
@@ -17,7 +16,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
  * Created by Igor Klemenski on 10.12.17.
  */
 // TODO add/define expected token lists in place of printing to console
-class TokenizerTest {
+public class TokenizerTest {
     // loooks like the test are run in parallel so they each need an instance of the source
 //    private Tokenizer tokenizer = new Tokenizer(new StringSource());
     @Test
@@ -182,6 +181,13 @@ class TokenizerTest {
     }
 
     @Test
+    void qwe() {
+        Tokenizer tokenizer = new Tokenizer(new StringSource());
+        ((StringSource) tokenizer.getSource()).setInputString("{\"key\":\"val");
+        tokenizer.tokenize().stream().forEach(System.out::println);
+    }
+
+    @Test
     void shouldNotTokenizeDollarChar() {
         Tokenizer tokenizer = new Tokenizer(new StringSource());
         ((StringSource) tokenizer.getSource()).setInputString(
@@ -224,7 +230,7 @@ class TokenizerTest {
     void shouldTokenizeFromFile() {
         try {
             Tokenizer tokenizer = new Tokenizer(new FileSource(
-                    "/home/igor/Documents/projects/json2xml/lexer/test/lexer/test.json")
+                    "/home/igor/Documents/projects/json2xml/lexer/src/test/java/lexer/test.json")
             );
             tokenizer.tokenize().stream().forEach(System.out::println);
         } catch (IOException | URISyntaxException e) {

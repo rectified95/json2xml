@@ -1,5 +1,5 @@
 import source.impl.StringSource;
-import tokenizer.TokenType;
+import tokenizer.token.TokenType;
 import tokenizer.Tokenizer;
 
 import java.util.Arrays;

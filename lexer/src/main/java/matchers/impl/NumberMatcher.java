@@ -1,10 +1,10 @@
 package matchers.impl;
 
-import tokenizer.Token;
-import tokenizer.TokenType;
+import tokenizer.token.Token;
+import tokenizer.token.TokenType;
 import matchers.Matcher;
 import source.Source;
-import tokenizer.TokenizerException;
+import tokenizer.exception.TokenizerException;
 
 import java.util.ArrayList;
 import java.util.List;

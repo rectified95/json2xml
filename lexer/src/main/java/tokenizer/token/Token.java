@@ -1,4 +1,4 @@
-package tokenizer;
+package tokenizer.token;
 
 /**
  * Created by igor on 10.12.17.

@@ -1,18 +1,19 @@
 package source.impl;
 
 import source.Source;
-import tokenizer.TokenizerException;
+import tokenizer.exception.TokenizerException;
 
 /**
  * Created by Igor Klemenski on 09.12.17.
  */
 public class StringSource implements Source {
     private static int lastTokenReadIdx = -1;
-    private static int idx = -1;
-
-    private String inputString;
+    private static int inputIdx = -1;
+    public static int lineNumber = 1;
+    public static int lineIdx = 1;
     private int curLen;
 
+    private String inputString;
     public StringSource() { }
 
     public StringSource(String jsonString) {
@@ -25,13 +26,18 @@ public class StringSource implements Source {
         if (!hasNext()) {
             throw new TokenizerException("no more characters");
         }
-        return inputString.charAt(++idx);
+        ++lineIdx;
+        return inputString.charAt(++inputIdx);
     }
 
     @Override
     public char getNextNonBlank() {
         char next = getNext();
         while (next == ' ' || next == '\t' || next == '\n' || next == '\r') {
+            if (next == '\n') {
+                ++lineNumber;
+                lineIdx = 1;
+            }
             next = getNext();
         }
         return next;
@@ -39,31 +45,46 @@ public class StringSource implements Source {
 
     @Override
     public char getCurrent() {
-        return inputString.charAt(idx);
+        return inputString.charAt(inputIdx);
+    }
+
+    public int getLineNumber() {
+        return lineNumber;
+    }
+
+    public int getLineIdx() {
+        return lineIdx;
     }
 
     @Override
     public boolean hasNext() {
-        return (idx + 1) < curLen;
+        return (inputIdx + 1) < curLen;
     }
 
     public boolean hasNextNonBlank() {
         char next;
-        boolean hasNextNonBlank = false;
+        int inputIdxSave = inputIdx;
+        int lineIdxSave = lineIdx;
         while (hasNext()) {
             next = getNext();
             if (next != ' ' && next != '\t' && next != '\n' && next != '\r') {
-                hasNextNonBlank = true;
-                reverseCursor();
-                break;
+                inputIdx = inputIdxSave;
+                lineIdx = lineIdxSave;
+                return true;
             }
         }
-        return hasNextNonBlank;
+        inputIdx = inputIdxSave;
+        lineIdx = lineIdxSave;
+        return false;
     }
 
     @Override
     public void reverseCursor() {
-        --this.idx;
+        --this.inputIdx;
+        if (inputString.charAt(inputIdx) == '\n') {
+            --this.lineNumber;
+        }
+        --this.lineIdx;
     }
 
     @Override

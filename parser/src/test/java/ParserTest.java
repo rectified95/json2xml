@@ -1,9 +1,10 @@
-import org.junit.Test;
 import source.impl.StringSource;
-import tokenizer.TokenType;
 import tokenizer.Tokenizer;
+import tokenizer.token.TokenType;
 
-import static org.junit.Assert.assertTrue;
+import org.junit.jupiter.api.Test;
+
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * Created by Igor Klemenski on 04.01.18.

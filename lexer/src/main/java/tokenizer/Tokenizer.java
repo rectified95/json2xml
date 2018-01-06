@@ -6,6 +6,9 @@ import matchers.impl.NumberMatcher;
 import matchers.impl.SpecialCharacterMatcher;
 import matchers.impl.StringMatcher;
 import source.Source;
+import tokenizer.exception.TokenizerException;
+import tokenizer.token.Token;
+import tokenizer.token.TokenType;
 
 import java.util.*;
 
@@ -70,10 +73,8 @@ public class Tokenizer {
         for (Character c : tokenMap.keySet()) {
             matcherMap.put(c, specialCharacterMatcher);
         }
-        // TODO wywalic wielkie litery, bo keywordy sa tylko małą pisane
-        for (char c = 'A'; c <= 'Z'; ++c) {
+        for (char c = 'a'; c <= 'z'; ++c) {
             matcherMap.put(c, keywordMatcher);
-            matcherMap.put((char)(c + 32), keywordMatcher);
         }
     }
 

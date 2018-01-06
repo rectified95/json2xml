@@ -56,4 +56,14 @@ public class FileSource implements Source {
     public void rollbackCursor() {
 
     }
+
+    @Override
+    public int getLineNumber() {
+        return source.getLineNumber();
+    }
+
+    @Override
+    public int getLineIdx() {
+        return source.getLineIdx();
+    }
 }
