@@ -1,4 +1,6 @@
+import exception.ParserException;
 import source.impl.StringSource;
+import tokenizer.token.Token;
 import tokenizer.token.TokenType;
 import tokenizer.Tokenizer;
 
@@ -16,7 +18,7 @@ public class Parser {
             Arrays.asList('{', '}', '[', ']', ':', ',', '"');
     private static Tokenizer tokenizer;
     private static List<TokenType> tokenStream = new LinkedList<>();
-    private static ListIterator<TokenType> curToken = tokenStream.listIterator();
+    private static ListIterator<TokenType> tokenIterator = tokenStream.listIterator();
 
     public Parser() {
         tokenizer = new Tokenizer(new StringSource(""));
@@ -26,17 +28,22 @@ public class Parser {
         this.tokenizer = tokenizer;
     }
 
-    public void parse() {
-        object();
+    public boolean parse() {
+        if (object()) {
+            return true;
+        } else {
+            throw new ParserException("cannot parse token: " + tokenizer.getCurToken().getValue() + " on line "
+                    + tokenizer.getSource().getLineNumber() + ":" + tokenizer.getSource().getLineIdx());
+        }
     }
 
     protected boolean term(TokenType token) {
         TokenType nextTokenType;
-        if (curToken.hasNext()) {
-            nextTokenType = curToken.next();
+        if (tokenIterator.hasNext()) {
+            nextTokenType = tokenIterator.next();
         } else {
             nextTokenType = tokenizer.getNextToken().getType();
-            curToken.add(nextTokenType);
+            tokenIterator.add(nextTokenType);
         }
         return nextTokenType.equals(token);
     }
@@ -46,7 +53,7 @@ public class Parser {
     }
 
     protected boolean value() {
-        int nextIndexSave = curToken.nextIndex();
+        int nextIndexSave = tokenIterator.nextIndex();
 
         List<Supplier<Boolean>> productionList = new LinkedList<>();
         productionList.add(() -> valueString());
@@ -59,7 +66,7 @@ public class Parser {
             if (s.get()) {
                 return true;
             } else {
-                curToken = tokenStream.listIterator(nextIndexSave);
+                tokenIterator = tokenStream.listIterator(nextIndexSave);
             }
         }
         return false;
@@ -86,11 +93,11 @@ public class Parser {
     }
 
     protected boolean elements() {
-        int nextIndexSave = curToken.nextIndex();
+        int nextIndexSave = tokenIterator.nextIndex();
         if (elementsValueElements()) {
             return true;
         } else {
-            curToken = tokenStream.listIterator(nextIndexSave);
+            tokenIterator = tokenStream.listIterator(nextIndexSave);
             if (elementsValue()) {
                 return true;
             }
@@ -107,11 +114,11 @@ public class Parser {
     }
 
     protected boolean array() {
-        int nextIndexSave = curToken.nextIndex();
+        int nextIndexSave = tokenIterator.nextIndex();
         if (arrayEmpty()) {
             return true;
         } else {
-            curToken = tokenStream.listIterator(nextIndexSave);
+            tokenIterator = tokenStream.listIterator(nextIndexSave);
             if (arrayElements()) {
                 return true;
             }
@@ -128,11 +135,11 @@ public class Parser {
     }
 
     protected boolean object() {
-        int nextIndexSave = curToken.nextIndex();
+        int nextIndexSave = tokenIterator.nextIndex();
         if (objectEmpty()) {
             return true;
         } else {
-            curToken = tokenStream.listIterator(nextIndexSave);
+            tokenIterator = tokenStream.listIterator(nextIndexSave);
             if (objectMembers()) {
                 return true;
             }
@@ -149,11 +156,11 @@ public class Parser {
     }
 
     protected boolean members() {
-        int nextIndexSave = curToken.nextIndex();
+        int nextIndexSave = tokenIterator.nextIndex();
         if (membersPairMembers()) {
             return true;
         } else {
-            curToken = tokenStream.listIterator(nextIndexSave);
+            tokenIterator = tokenStream.listIterator(nextIndexSave);
             if (membersPair()) {
                 return true;
             }

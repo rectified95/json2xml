@@ -1,9 +1,13 @@
+import exception.ParserException;
+import org.junit.jupiter.api.function.Executable;
 import source.impl.StringSource;
 import tokenizer.Tokenizer;
 import tokenizer.token.TokenType;
 
 import org.junit.jupiter.api.Test;
 
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
@@ -144,7 +148,8 @@ public class ParserTest {
                 "{\"key\" : 0666\"ss\"   , \"keyAfterNumber\" : \"random\"}"
         );
         Parser parser = new Parser(tokenizer);
-        assertTrue(parser.object());
+        Executable exec = () -> parser.parse();
+        assertThrows(ParserException.class, exec);
     }
 
 }

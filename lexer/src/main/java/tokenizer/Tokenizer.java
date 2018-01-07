@@ -20,6 +20,7 @@ public class Tokenizer {
     public static final Map<Character, TokenType> tokenMap;
     private Map<Character, Matcher> matcherMap = new HashMap<>();
     private Source source;
+    private Token curToken;
     private char currentChar;
 
     static {
@@ -52,7 +53,12 @@ public class Tokenizer {
         if (matcher == null) {
             throw new TokenizerException("cannot recognize token - invalid input");
         }
-        return matcher.match(source);
+        curToken = matcher.match(source);
+        return curToken;
+    }
+
+    public Token getCurToken() {
+        return curToken;
     }
 
     public String getNextTokenValue() {
