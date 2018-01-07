@@ -20,6 +20,7 @@ public class Tokenizer {
     public static final Map<Character, TokenType> tokenMap;
     private Map<Character, Matcher> matcherMap = new HashMap<>();
     private Source source;
+    // FIXME remove cur oken - only to be maintained i PARSER
     private Token curToken;
     private char currentChar;
 

@@ -1,12 +1,10 @@
 import exception.ParserException;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.function.Executable;
 import source.impl.StringSource;
 import tokenizer.Tokenizer;
 import tokenizer.token.TokenType;
 
-import org.junit.jupiter.api.Test;
-
-import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -23,6 +21,7 @@ public class ParserTest {
         Tokenizer tokenizer = new Tokenizer(new StringSource());
         ((StringSource) tokenizer.getSource()).setInputString("\"some_string\"");
         Parser parser = new Parser(tokenizer);
+        parser.getNext();
         assertTrue(parser.term(TokenType.STRING));
     }
 
@@ -31,7 +30,27 @@ public class ParserTest {
         Tokenizer tokenizer = new Tokenizer(new StringSource());
         ((StringSource) tokenizer.getSource()).setInputString("\"positive\" : 766");
         Parser parser = new Parser(tokenizer);
-        assertTrue(parser.pair());
+        assertTrue(parser.parsePair() != null);
+    }
+
+    @Test
+    public void shouldParseSimpleKV() {
+        Tokenizer tokenizer = new Tokenizer(new StringSource());
+        ((StringSource) tokenizer.getSource()).setInputString(
+                "{\"positive\" : 0, \"negative\" : -0.08, \"xxx\": 0.12}"
+        );
+        Parser parser = new Parser(tokenizer);
+        assertTrue(parser.parse() != null);
+    }
+
+    @Test
+    public void shouldParseArray() {
+        Tokenizer tokenizer = new Tokenizer(new StringSource());
+        ((StringSource) tokenizer.getSource()).setInputString(
+                "{\"positive\" : [1,2,3]}"
+        );
+        Parser parser = new Parser(tokenizer);
+        assertTrue(parser.parse() != null);
     }
 
     @Test
@@ -62,7 +81,7 @@ public class ParserTest {
                         "}"
         );
         Parser parser = new Parser(tokenizer);
-        assertTrue(parser.object());
+        assertTrue(parser.parse() != null);
     }
 
     @Test
@@ -122,7 +141,7 @@ public class ParserTest {
         Tokenizer tokenizer = new Tokenizer(new StringSource());
         ((StringSource) tokenizer.getSource()).setInputString("{}");
         Parser parser = new Parser(tokenizer);
-        assertTrue(parser.objectEmpty());
+        assertTrue(parser.parseObject() != null);
     }
 
     @Test

@@ -1,14 +1,14 @@
+import ast.*;
 import exception.ParserException;
 import source.impl.StringSource;
+import tokenizer.Tokenizer;
 import tokenizer.token.Token;
 import tokenizer.token.TokenType;
-import tokenizer.Tokenizer;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.ListIterator;
-import java.util.function.Supplier;
 
 /**
  * Created by Igor Klemenski on 04.01.18.
@@ -17,8 +17,7 @@ public class Parser {
     private static final List<Character> specialCharList =
             Arrays.asList('{', '}', '[', ']', ':', ',', '"');
     private static Tokenizer tokenizer;
-    private static List<TokenType> tokenStream = new LinkedList<>();
-    private static ListIterator<TokenType> tokenIterator = tokenStream.listIterator();
+    private Token curToken;
 
     public Parser() {
         tokenizer = new Tokenizer(new StringSource(""));
@@ -28,151 +27,137 @@ public class Parser {
         this.tokenizer = tokenizer;
     }
 
-    public boolean parse() {
-        if (object()) {
-            return true;
-        } else {
-            throw new ParserException("cannot parse token: " + tokenizer.getCurToken().getValue() + " on line "
-                    + tokenizer.getSource().getLineNumber() + ":" + tokenizer.getSource().getLineIdx());
+    public ObjectAstNode parse() {
+        getNext();
+        return parseObject();
+    }
+
+    protected boolean term(TokenType tokenType) {
+        return curToken.getType().equals(tokenType);
+    }
+
+    protected ObjectAstNode parseObject() {
+        if (!term(TokenType.LCURL)) {
+            error();
         }
-    }
-
-    protected boolean term(TokenType token) {
-        TokenType nextTokenType;
-        if (tokenIterator.hasNext()) {
-            nextTokenType = tokenIterator.next();
-        } else {
-            nextTokenType = tokenizer.getNextToken().getType();
-            tokenIterator.add(nextTokenType);
+        getNext();
+        if (term(TokenType.RCURL)) {
+            return new ObjectAstNode(new MembersAstNode(Collections.emptyList()));
         }
-        return nextTokenType.equals(token);
+        MembersAstNode members = parseMembers();
+        if (members == null) {
+            error();
+        }
+        if (!term(TokenType.RCURL)) {
+            error();
+        }
+        return new ObjectAstNode(members);
     }
 
-    protected boolean pair() {
-        return term(TokenType.STRING) && term(TokenType.COLON) && value();
+    protected PairAstNode parsePair() {
+        if (!term(TokenType.STRING)) {
+            error();
+        }
+        StringAstNode stringAstNode = new StringAstNode(curToken.getValue());
+        getNext();
+        if (!term(TokenType.COLON)) {
+            error();
+        }
+        getNext();
+        ValueAstNode valueAstNode = parseValue();
+        if (valueAstNode == null) {
+            error();
+        }
+        return new PairAstNode(stringAstNode, valueAstNode);
     }
 
-    protected boolean value() {
-        int nextIndexSave = tokenIterator.nextIndex();
-
-        List<Supplier<Boolean>> productionList = new LinkedList<>();
-        productionList.add(() -> valueString());
-        productionList.add(() -> valueObject());
-        productionList.add(() -> valueArray());
-        productionList.add(() -> valueNumber());
-        productionList.add(() -> valueKeyword());
-
-        for (Supplier<Boolean> s : productionList) {
-            if (s.get()) {
-                return true;
-            } else {
-                tokenIterator = tokenStream.listIterator(nextIndexSave);
+    protected ValueAstNode parseValue() {
+        if (term(TokenType.STRING)) {
+            return new ValueAstNode(new StringAstNode(curToken.getValue()));
+        } else if (term(TokenType.LBRACKET)) {
+            ArrayAstNode arrayAstNode = parseArray();
+            if (arrayAstNode == null) {
+                error();
             }
-        }
-        return false;
-    }
-
-    protected boolean valueString() {
-        return term(TokenType.STRING);
-    }
-
-    protected boolean valueNumber() {
-        return term(TokenType.NUMBER);
-    }
-
-    protected boolean valueObject() {
-        return object();
-    }
-
-    protected boolean valueArray() {
-        return array();
-    }
-
-    protected boolean valueKeyword() {
-        return term(TokenType.KEYWORD);
-    }
-
-    protected boolean elements() {
-        int nextIndexSave = tokenIterator.nextIndex();
-        if (elementsValueElements()) {
-            return true;
-        } else {
-            tokenIterator = tokenStream.listIterator(nextIndexSave);
-            if (elementsValue()) {
-                return true;
+            return new ValueAstNode(arrayAstNode);
+        } else if (term(TokenType.NUMBER)) {
+            NumberAstNode numberAstNode = new NumberAstNode(curToken.getValue());
+            return new ValueAstNode(numberAstNode);
+        } else if(term(TokenType.LCURL)) {
+            ObjectAstNode objectAstNode = parseObject();
+            if (objectAstNode == null) {
+                error();
             }
+            return new ValueAstNode(objectAstNode);
+        } else if (term(TokenType.KEYWORD)) {
+            return new ValueAstNode(
+                    new KeywordAstNode(KeywordAstNode.Keyword.valueOf(curToken.getValue().toUpperCase()))
+            );
         }
-        return false;
+
+        return null;
     }
 
-    protected boolean elementsValue() {
-        return value();
-    }
-
-    protected boolean elementsValueElements() {
-        return value() && term(TokenType.COMMA) && elements();
-    }
-
-    protected boolean array() {
-        int nextIndexSave = tokenIterator.nextIndex();
-        if (arrayEmpty()) {
-            return true;
-        } else {
-            tokenIterator = tokenStream.listIterator(nextIndexSave);
-            if (arrayElements()) {
-                return true;
+    protected MembersAstNode parseMembers() {
+        List<PairAstNode> members = new LinkedList<>();
+        PairAstNode pairNode = parsePair();
+        if (pairNode == null) {
+            error();
+        }
+        members.add(pairNode);
+        getNext();
+        if (term(TokenType.COMMA)) {
+            getNext();
+            MembersAstNode membersAstNode = parseMembers();
+            if (membersAstNode == null) {
+                error();
             }
+            members.addAll(membersAstNode.getMembers());
         }
-        return false;
+        return new MembersAstNode(members);
     }
 
-    protected boolean arrayEmpty() {
-        return term(TokenType.LBRACKET) && term(TokenType.RBRACKET);
-    }
-
-    protected boolean arrayElements() {
-        return term(TokenType.LBRACKET) && elements() && term(TokenType.RBRACKET);
-    }
-
-    protected boolean object() {
-        int nextIndexSave = tokenIterator.nextIndex();
-        if (objectEmpty()) {
-            return true;
-        } else {
-            tokenIterator = tokenStream.listIterator(nextIndexSave);
-            if (objectMembers()) {
-                return true;
+    protected ElementsAstNode parseElements() {
+        List<ValueAstNode> valueAstNodes = new LinkedList<>();
+        ValueAstNode valueAstNode = parseValue();
+        if (valueAstNode == null) {
+            error();
+        }
+        valueAstNodes.add(valueAstNode);
+        getNext();
+        if (term(TokenType.COMMA)) {
+            getNext();
+            ElementsAstNode elementsAstNode = parseElements();
+            if (elementsAstNode == null) {
+                error();
             }
+            valueAstNodes.addAll(elementsAstNode.getValues());
         }
-        return false;
+        return new ElementsAstNode(valueAstNodes);
     }
 
-    protected boolean objectEmpty() {
-        return term(TokenType.LCURL) && term(TokenType.RCURL);
-    }
-
-    protected boolean objectMembers() {
-        return term(TokenType.LCURL) && members() && term(TokenType.RCURL);
-    }
-
-    protected boolean members() {
-        int nextIndexSave = tokenIterator.nextIndex();
-        if (membersPairMembers()) {
-            return true;
-        } else {
-            tokenIterator = tokenStream.listIterator(nextIndexSave);
-            if (membersPair()) {
-                return true;
-            }
+    protected ArrayAstNode parseArray() {
+        getNext();
+        ElementsAstNode elementsAstNode = parseElements();
+        if (elementsAstNode == null) {
+            error();
         }
-        return false;
+        if (!term(TokenType.RBRACKET)) {
+            error();
+        }
+        return new ArrayAstNode(elementsAstNode);
     }
 
-    protected boolean membersPair() {
-        return pair();
+    public Token getCurToken() {
+        return curToken;
     }
 
-    protected boolean membersPairMembers() {
-        return pair() && term(TokenType.COMMA) && members();
+    protected void getNext() {
+        curToken = tokenizer.getNextToken();
+    }
+    
+    protected void error() {
+        throw new ParserException("bad token: " + curToken + " on line " +
+                tokenizer.getSource().getLineNumber() + ":" + tokenizer.getSource().getLineIdx());
     }
 }
