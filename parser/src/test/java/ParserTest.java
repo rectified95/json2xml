@@ -13,10 +13,6 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
  */
 public class ParserTest {
     @Test
-    public void parse() throws Exception {
-    }
-
-    @Test
     public void term() throws Exception {
         Tokenizer tokenizer = new Tokenizer(new StringSource());
         ((StringSource) tokenizer.getSource()).setInputString("\"some_string\"");
@@ -30,7 +26,7 @@ public class ParserTest {
         Tokenizer tokenizer = new Tokenizer(new StringSource());
         ((StringSource) tokenizer.getSource()).setInputString("\"positive\" : 766");
         Parser parser = new Parser(tokenizer);
-        assertTrue(parser.parsePair() != null);
+        assertTrue(parser.parsePair(1) != null);
     }
 
     @Test
@@ -85,79 +81,11 @@ public class ParserTest {
     }
 
     @Test
-    public void value() throws Exception {
-    }
-
-    @Test
-    public void valueString() throws Exception {
-    }
-
-    @Test
-    public void valueNumber() throws Exception {
-    }
-
-    @Test
-    public void valueObject() throws Exception {
-    }
-
-    @Test
-    public void valueArray() throws Exception {
-    }
-
-    @Test
-    public void valueKeyword() throws Exception {
-    }
-
-    @Test
-    public void elements() throws Exception {
-    }
-
-    @Test
-    public void elementsValue() throws Exception {
-    }
-
-    @Test
-    public void elementsValueElements() throws Exception {
-    }
-
-    @Test
-    public void array() throws Exception {
-    }
-
-    @Test
-    public void arrayEmpty() throws Exception {
-    }
-
-    @Test
-    public void arrayElements() throws Exception {
-    }
-
-    @Test
-    public void object() throws Exception {
-    }
-
-    @Test
     public void objectEmpty() throws Exception {
         Tokenizer tokenizer = new Tokenizer(new StringSource());
         ((StringSource) tokenizer.getSource()).setInputString("{}");
         Parser parser = new Parser(tokenizer);
-        assertTrue(parser.parseObject() != null);
-    }
-
-    @Test
-    public void objectMembers() throws Exception {
-    }
-
-    @Test
-    public void members() throws Exception {
-    }
-
-    @Test
-    public void membersPair() throws Exception {
-    }
-
-    @Test
-    public void membersPairMembers() throws Exception {
+        assertTrue(parser.parse() != null);
     }
 
     @Test
@@ -170,5 +98,4 @@ public class ParserTest {
         Executable exec = () -> parser.parse();
         assertThrows(ParserException.class, exec);
     }
-
 }

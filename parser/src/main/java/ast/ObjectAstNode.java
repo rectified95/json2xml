@@ -1,17 +1,28 @@
 package ast;
 
+import java.util.List;
+
 /**
  * Created by Igor Klemenski on 07.01.18.
  */
 public class ObjectAstNode extends AstNode {
-    private MembersAstNode members;
+    private List<PairAstNode> members;
 
-    public ObjectAstNode(MembersAstNode members) {
+    public ObjectAstNode(List<PairAstNode> members) {
         this.members = members;
     }
 
-    public MembersAstNode getMembers() {
+    public ObjectAstNode(List<PairAstNode> members, int level) {
+        super(level);
+        this.members = members;
+    }
+
+    public List<PairAstNode> getMembers() {
         return members;
     }
-    // moze list of pairnode??
+
+    @Override
+    protected String print() {
+        return null;
+    }
 }

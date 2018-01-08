@@ -10,7 +10,17 @@ public class NumberAstNode extends AstNode {
         this.value = value;
     }
 
+    public NumberAstNode(String value, int level) {
+        super(level);
+        this.value = value;
+    }
+
     public String getValue() {
         return value;
+    }
+
+    @Override
+    protected String print() {
+        return null;
     }
 }

@@ -10,7 +10,17 @@ public class ValueAstNode<T extends AstNode> extends AstNode {
         this.value = value;
     }
 
+    public ValueAstNode(T value, int level) {
+        super(level);
+        this.value = value;
+    }
+
     public T getValue() {
         return value;
+    }
+
+    @Override
+    protected String print() {
+        return null;
     }
 }

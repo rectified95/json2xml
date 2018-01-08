@@ -12,11 +12,22 @@ public class PairAstNode extends AstNode {
         this.value = value;
     }
 
+    public PairAstNode(StringAstNode key, ValueAstNode value, int level) {
+        super(level);
+        this.key = key;
+        this.value = value;
+    }
+
     public StringAstNode getKey() {
         return key;
     }
 
     public ValueAstNode getValue() {
         return value;
+    }
+
+    @Override
+    protected String print() {
+        return null;
     }
 }
