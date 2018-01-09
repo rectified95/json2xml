@@ -4,6 +4,7 @@ package ast;
  * Created by Igor Klemenski on 07.01.18.
  */
 public class PairAstNode extends AstNode {
+    private static final String nodeName = "PAIR";
     StringAstNode key;
     ValueAstNode value;
 
@@ -27,7 +28,13 @@ public class PairAstNode extends AstNode {
     }
 
     @Override
-    protected String print() {
-        return null;
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+        sb.append(printIndent());
+        sb.append(nodeName);
+        sb.append("\n");
+        sb.append(key.toString());
+        sb.append(value.toString());
+        return sb.toString();
     }
 }

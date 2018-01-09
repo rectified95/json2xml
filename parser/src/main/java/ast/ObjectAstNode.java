@@ -6,6 +6,7 @@ import java.util.List;
  * Created by Igor Klemenski on 07.01.18.
  */
 public class ObjectAstNode extends AstNode {
+    private static final String nodeName = "OBJECT";
     private List<PairAstNode> members;
 
     public ObjectAstNode(List<PairAstNode> members) {
@@ -22,7 +23,14 @@ public class ObjectAstNode extends AstNode {
     }
 
     @Override
-    protected String print() {
-        return null;
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+        sb.append(printIndent());
+        sb.append(nodeName);
+        sb.append("\n");
+        for (PairAstNode pair : members) {
+            sb.append(pair.toString());
+        }
+        return sb.toString();
     }
 }

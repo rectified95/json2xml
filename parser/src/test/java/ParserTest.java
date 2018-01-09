@@ -1,3 +1,4 @@
+import ast.ObjectAstNode;
 import exception.ParserException;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.function.Executable;
@@ -36,7 +37,9 @@ public class ParserTest {
                 "{\"positive\" : 0, \"negative\" : -0.08, \"xxx\": 0.12}"
         );
         Parser parser = new Parser(tokenizer);
-        assertTrue(parser.parse() != null);
+        ObjectAstNode objectAstNode = parser.parse();
+        System.out.println(objectAstNode);
+        assertTrue(objectAstNode != null);
     }
 
     @Test
@@ -46,7 +49,9 @@ public class ParserTest {
                 "{\"positive\" : [1,2,3]}"
         );
         Parser parser = new Parser(tokenizer);
-        assertTrue(parser.parse() != null);
+        ObjectAstNode objectAstNode = parser.parse();
+        System.out.println(objectAstNode);
+        assertTrue(objectAstNode != null);
     }
 
     @Test
@@ -77,7 +82,9 @@ public class ParserTest {
                         "}"
         );
         Parser parser = new Parser(tokenizer);
-        assertTrue(parser.parse() != null);
+        ObjectAstNode objectAstNode = parser.parse();
+        System.out.println(objectAstNode);
+        assertTrue(objectAstNode != null);
     }
 
     @Test

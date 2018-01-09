@@ -4,6 +4,7 @@ package ast;
  * Created by Igor Klemenski on 07.01.18.
  */
 public class ValueAstNode<T extends AstNode> extends AstNode {
+    private static final String nodeName = "VALUE";
     private T value;
 
     public ValueAstNode(T value) {
@@ -20,7 +21,7 @@ public class ValueAstNode<T extends AstNode> extends AstNode {
     }
 
     @Override
-    protected String print() {
-        return null;
+    public String toString() {
+        return value.toString();
     }
 }

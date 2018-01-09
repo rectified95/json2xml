@@ -73,7 +73,7 @@ public class Parser {
 
     protected ValueAstNode parseValue(int level) {
         if (term(TokenType.STRING)) {
-            return new ValueAstNode(new StringAstNode(curToken.getValue()), level);
+            return new ValueAstNode(new StringAstNode(curToken.getValue(), level), level);
         } else if (term(TokenType.LBRACKET)) {
             ArrayAstNode arrayAstNode = parseArray(level);
             if (arrayAstNode == null) {
