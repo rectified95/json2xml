@@ -1,11 +1,9 @@
 import ast.*;
 import exception.ParserException;
-import source.impl.StringSource;
 import tokenizer.Tokenizer;
 import tokenizer.token.Token;
 import tokenizer.token.TokenType;
 
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
@@ -14,14 +12,8 @@ import java.util.List;
  * Created by Igor Klemenski on 04.01.18.
  */
 public class Parser {
-    private static final List<Character> specialCharList =
-            Arrays.asList('{', '}', '[', ']', ':', ',', '"');
     private static Tokenizer tokenizer;
     private Token curToken;
-
-    public Parser() {
-        tokenizer = new Tokenizer(new StringSource(""));
-    }
 
     public Parser(Tokenizer tokenizer) {
         this.tokenizer = tokenizer;
@@ -150,16 +142,16 @@ public class Parser {
         return valueAstNodes;
     }
 
-    public Token getCurToken() {
-        return curToken;
-    }
-
     protected void getNext() {
         curToken = tokenizer.getNextToken();
     }
-    
+
     protected void error() {
         throw new ParserException("bad token: " + curToken + " on line " +
                 tokenizer.getSource().getLineNumber() + ":" + tokenizer.getSource().getLineIdx());
+    }
+
+    public Token getCurToken() {
+        return curToken;
     }
 }

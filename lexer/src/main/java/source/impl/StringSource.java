@@ -7,7 +7,6 @@ import tokenizer.exception.TokenizerException;
  * Created by Igor Klemenski on 09.12.17.
  */
 public class StringSource implements Source {
-    private static int lastTokenReadIdx = -1;
     private static int inputIdx = -1;
     public static int lineNumber = 1;
     public static int lineIdx = 1;

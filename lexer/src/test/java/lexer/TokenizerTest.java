@@ -5,10 +5,16 @@ import org.junit.jupiter.api.function.Executable;
 import source.impl.FileSource;
 import source.impl.StringSource;
 import tokenizer.Tokenizer;
+import tokenizer.exception.TokenizerException;
+import tokenizer.token.Token;
+import tokenizer.token.TokenType;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
+import java.util.Arrays;
+import java.util.List;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 
@@ -156,44 +162,56 @@ public class TokenizerTest {
 
     @Test
     void shouldNotTokenizeNumbersWithTwoDots() {
-        Tokenizer tokenizer = new Tokenizer(new StringSource());
-        ((StringSource) tokenizer.getSource()).setInputString(
-                "{\"key\" : 6.5.2 }"
-        );
-        tokenizer.tokenize().stream().forEach(System.out::println);
+        Tokenizer tokenizer = new Tokenizer(new StringSource("{\"key\" : 6.5.2 }"));
+        Executable exec = () -> tokenizer.tokenize();
+        assertThrows(TokenizerException.class, exec);
     }
     @Test
     void shouldTokenizeRealNumbersWithExponent() {
-        Tokenizer tokenizer = new Tokenizer(new StringSource());
-        ((StringSource) tokenizer.getSource()).setInputString(
-                "{\"key\" : 123.45e+64   , \"otherKey\" : -23.09E-98 }"
+        Tokenizer tokenizer = new Tokenizer(new StringSource(
+                "{\"key\" : 123.45e+64   , \"otherKey\" : -23.09E-98 }")
         );
-        tokenizer.tokenize().stream().forEach(System.out::println);
+        List<Token> expectedTokenList = Arrays.asList(
+                new Token(TokenType.LCURL, "{"), new Token(TokenType.STRING, "key"),
+                new Token(TokenType.COLON, ":"), new Token(TokenType.NUMBER, "123.45e+64"),
+                new Token(TokenType.COMMA, ","), new Token(TokenType.STRING, "otherKey"),
+                new Token(TokenType.COLON, ":"), new Token(TokenType.NUMBER, "-23.09E-98"),
+                new Token(TokenType.RCURL, "}")
+        );
+        assertEquals(tokenizer.tokenize(), expectedTokenList);
+    }
+
+    @Test
+    void shouldTokenizeZeroWithExponent() {
+        Tokenizer tokenizer = new Tokenizer(new StringSource(
+                "{\"key\" : 0.45e+64   , \"otherKey\" : 0E-98 }")
+        );
+        List<Token> expectedTokenList = Arrays.asList(
+                new Token(TokenType.LCURL, "{"), new Token(TokenType.STRING, "key"),
+                new Token(TokenType.COLON, ":"), new Token(TokenType.NUMBER, "0.45e+64"),
+                new Token(TokenType.COMMA, ","), new Token(TokenType.STRING, "otherKey"),
+                new Token(TokenType.COLON, ":"), new Token(TokenType.NUMBER, "0E-98"),
+                new Token(TokenType.RCURL, "}")
+        );
+        assertEquals(tokenizer.tokenize(), expectedTokenList);
     }
 
     @Test
     void shouldNotTokenizeStringWithoutQuotes() {
-        Tokenizer tokenizer = new Tokenizer(new StringSource());
-        ((StringSource) tokenizer.getSource()).setInputString(
-                "{\"key\" : 45   , \"otherKey\" : s }"
+        Tokenizer tokenizer = new Tokenizer(new StringSource(
+                "{\"key\" : 45   , \"otherKey\" : s }")
         );
-        tokenizer.tokenize().stream().forEach(System.out::println);
-    }
-
-    @Test
-    void qwe() {
-        Tokenizer tokenizer = new Tokenizer(new StringSource());
-        ((StringSource) tokenizer.getSource()).setInputString("{\"key\":\"val");
-        tokenizer.tokenize().stream().forEach(System.out::println);
+        Executable exec = () -> tokenizer.tokenize();
+        assertThrows(TokenizerException.class, exec);
     }
 
     @Test
     void shouldNotTokenizeDollarChar() {
-        Tokenizer tokenizer = new Tokenizer(new StringSource());
-        ((StringSource) tokenizer.getSource()).setInputString(
-                "{\"key\" : $   , \"otherKey\" : s }"
+        Tokenizer tokenizer = new Tokenizer(new StringSource(
+                "{\"key\" : $   , \"otherKey\" : s }")
         );
-        tokenizer.tokenize().stream().forEach(System.out::println);
+        Executable exec = () -> tokenizer.tokenize();
+        assertThrows(TokenizerException.class, exec);
     }
 
     @Test
