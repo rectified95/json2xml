@@ -27,6 +27,7 @@ public class ParserTest {
         Tokenizer tokenizer = new Tokenizer(new StringSource());
         ((StringSource) tokenizer.getSource()).setInputString("\"positive\" : 766");
         Parser parser = new Parser(tokenizer);
+        parser.getNext();
         assertTrue(parser.parsePair(1) != null);
     }
 

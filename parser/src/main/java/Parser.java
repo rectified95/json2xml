@@ -38,20 +38,37 @@ public class Parser {
 
     protected ObjectAstNode parseObject(int level) {
         if (!term(TokenType.LCURL)) {
-            error();
+            return null;
         }
         getNext();
         if (term(TokenType.RCURL)) {
             return new ObjectAstNode(Collections.emptyList(), level);
         }
         List<PairAstNode> members = parseMembers(level + 1);
-        if (members == null) {
-            error();
-        }
-        if (!term(TokenType.RCURL)) {
+        if (members == null || !term(TokenType.RCURL)) {
             error();
         }
         return new ObjectAstNode(members, level);
+    }
+
+    protected List<PairAstNode> parseMembers(int level) {
+        List<PairAstNode> members = new LinkedList<>();
+        PairAstNode pairNode = parsePair(level);
+        if (pairNode == null) {
+            error();
+        }
+        members.add(pairNode);
+        getNext();
+        while (term(TokenType.COMMA)) {
+            getNext();
+            PairAstNode pair = parsePair(level);
+            if (pair == null) {
+                error();
+            }
+            members.add(pair);
+            getNext();
+        }
+        return members;
     }
 
     protected PairAstNode parsePair(int level) {
@@ -74,47 +91,43 @@ public class Parser {
     protected ValueAstNode parseValue(int level) {
         if (term(TokenType.STRING)) {
             return new ValueAstNode(new StringAstNode(curToken.getValue(), level), level);
-        } else if (term(TokenType.LBRACKET)) {
-            ArrayAstNode arrayAstNode = parseArray(level);
-            if (arrayAstNode == null) {
-                error();
-            }
+        }
+        ArrayAstNode arrayAstNode = parseArray(level);
+        if (arrayAstNode != null) {
             return new ValueAstNode(arrayAstNode);
-        } else if (term(TokenType.NUMBER)) {
+        }
+
+        if (term(TokenType.NUMBER)) {
             NumberAstNode numberAstNode = new NumberAstNode(curToken.getValue(), level);
             return new ValueAstNode(numberAstNode);
-        } else if(term(TokenType.LCURL)) {
-            ObjectAstNode objectAstNode = parseObject(level);
-            if (objectAstNode == null) {
-                error();
-            }
+        }
+
+        ObjectAstNode objectAstNode = parseObject(level);
+        if (objectAstNode != null) {
             return new ValueAstNode(objectAstNode, level);
-        } else if (term(TokenType.KEYWORD)) {
+        }
+
+        if (term(TokenType.KEYWORD)) {
             return new ValueAstNode(
                     new KeywordAstNode(KeywordAstNode.Keyword.valueOf(curToken.getValue().toUpperCase()), level)
             );
         }
-
         return null;
     }
 
-    protected List<PairAstNode> parseMembers(int level) {
-        List<PairAstNode> members = new LinkedList<>();
-        PairAstNode pairNode = parsePair(level);
-        if (pairNode == null) {
+    protected ArrayAstNode parseArray(int level) {
+        if (!term(TokenType.LBRACKET)) {
+            return null;
+        }
+        getNext();
+        List<ValueAstNode> elementsAstNode = parseElements(level + 1);
+        if (elementsAstNode == null) {
             error();
         }
-        members.add(pairNode);
-        getNext();
-        if (term(TokenType.COMMA)) {
-            getNext();
-            List<PairAstNode> pairs = parseMembers(level);
-            if (pairs == null) {
-                error();
-            }
-            members.addAll(pairs);
+        if (!term(TokenType.RBRACKET)) {
+            error();
         }
-        return members;
+        return new ArrayAstNode(elementsAstNode, level);
     }
 
     protected List<ValueAstNode> parseElements(int level) {
@@ -125,27 +138,16 @@ public class Parser {
         }
         valueAstNodes.add(valueAstNode);
         getNext();
-        if (term(TokenType.COMMA)) {
+        while (term(TokenType.COMMA)) {
             getNext();
-            List<ValueAstNode> arrayElements = parseElements(level);
-            if (arrayElements == null) {
+            ValueAstNode arrayValue = parseValue(level);
+            if (arrayValue == null) {
                 error();
             }
-            valueAstNodes.addAll(arrayElements);
+            valueAstNodes.add(arrayValue);
+            getNext();
         }
         return valueAstNodes;
-    }
-
-    protected ArrayAstNode parseArray(int level) {
-        getNext();
-        List<ValueAstNode> elementsAstNode = parseElements(level + 1);
-        if (elementsAstNode == null) {
-            error();
-        }
-        if (!term(TokenType.RBRACKET)) {
-            error();
-        }
-        return new ArrayAstNode(elementsAstNode, level);
     }
 
     public Token getCurToken() {
