@@ -20,7 +20,7 @@ import java.util.List;
  * Created by Igor Klemenski on 04.01.18.
  */
 public class Parser {
-    private static Tokenizer tokenizer;
+    private Tokenizer tokenizer;
     private Token curToken;
 
     public Parser(Tokenizer tokenizer) {
@@ -29,7 +29,7 @@ public class Parser {
 
     public ObjectAstNode parse() {
         getNext();
-        return parseObject(1);
+        return parseObject(0);
     }
 
     protected boolean term(TokenType tokenType) {
@@ -90,25 +90,25 @@ public class Parser {
 
     protected ValueAstNode parseValue(int level) {
         if (term(TokenType.STRING)) {
-            return new ValueAstNode(new StringAstNode(curToken.getValue(), level), level);
+            return new ValueAstNode<>(new StringAstNode(curToken.getValue(), level), level);
         }
         ArrayAstNode arrayAstNode = parseArray(level);
         if (arrayAstNode != null) {
-            return new ValueAstNode(arrayAstNode);
+            return new ValueAstNode<>(arrayAstNode);
         }
 
         if (term(TokenType.NUMBER)) {
             NumberAstNode numberAstNode = new NumberAstNode(curToken.getValue(), level);
-            return new ValueAstNode(numberAstNode);
+            return new ValueAstNode<>(numberAstNode);
         }
 
         ObjectAstNode objectAstNode = parseObject(level);
         if (objectAstNode != null) {
-            return new ValueAstNode(objectAstNode, level);
+            return new ValueAstNode<>(objectAstNode, level);
         }
 
         if (term(TokenType.KEYWORD)) {
-            return new ValueAstNode(
+            return new ValueAstNode<>(
                     new KeywordAstNode(KeywordAstNode.Keyword.valueOf(curToken.getValue().toUpperCase()), level)
             );
         }

@@ -5,8 +5,8 @@ package parser.ast;
  */
 public class PairAstNode extends AstNode {
     private static final String nodeName = "PAIR";
-    StringAstNode key;
-    ValueAstNode value;
+    private StringAstNode key;
+    private ValueAstNode<? extends AstNode> value;
 
     public PairAstNode(StringAstNode key, ValueAstNode value) {
         this.key = key;
@@ -23,7 +23,7 @@ public class PairAstNode extends AstNode {
         return key;
     }
 
-    public ValueAstNode getValue() {
+    public ValueAstNode<? extends AstNode> getValue() {
         return value;
     }
 

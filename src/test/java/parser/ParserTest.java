@@ -49,7 +49,19 @@ public class ParserTest {
     public void shouldParseArray() {
         Tokenizer tokenizer = new Tokenizer(new StringSource());
         ((StringSource) tokenizer.getSource()).setInputString(
-                "{\"positive\" : [1,2,3]}"
+                "{\"key\":\"asasd\",\"ar\" : [1,2,3]}"
+        );
+        Parser parser = new Parser(tokenizer);
+        ObjectAstNode objectAstNode = parser.parse();
+        System.out.println(objectAstNode);
+        assertTrue(objectAstNode != null);
+    }
+
+    @Test
+    public void shouldParseArrayOfObjects() {
+        Tokenizer tokenizer = new Tokenizer(new StringSource());
+        ((StringSource) tokenizer.getSource()).setInputString(
+                "{\"atr\":[1,2,{\"a\":\"A\",\"b\":\"B\"}]}"
         );
         Parser parser = new Parser(tokenizer);
         ObjectAstNode objectAstNode = parser.parse();

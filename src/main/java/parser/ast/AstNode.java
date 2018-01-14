@@ -16,7 +16,7 @@ public abstract class AstNode {
         return treeDepth;
     }
 
-    protected String printIndent() {
+    public String printIndent() {
         StringBuilder sb = new StringBuilder();
         for (int i = treeDepth; i > 0; --i) {
             sb.append(" ");
