@@ -44,7 +44,7 @@ public class Parser {
         if (term(TokenType.RCURL)) {
             return new ObjectAstNode(Collections.emptyList(), level);
         }
-        List<PairAstNode> members = parseMembers(level + 1);
+        List<PairAstNode> members = parseMembers(level + 2);
         if (members == null || !term(TokenType.RCURL)) {
             error();
         }
@@ -75,13 +75,13 @@ public class Parser {
         if (!term(TokenType.STRING)) {
             error();
         }
-        StringAstNode stringAstNode = new StringAstNode(curToken.getValue(), level + 1);
+        StringAstNode stringAstNode = new StringAstNode(curToken.getValue(), level + 2);
         getNext();
         if (!term(TokenType.COLON)) {
             error();
         }
         getNext();
-        ValueAstNode valueAstNode = parseValue(level + 1);
+        ValueAstNode valueAstNode = parseValue(level + 2);
         if (valueAstNode == null) {
             error();
         }
@@ -120,7 +120,7 @@ public class Parser {
             return null;
         }
         getNext();
-        List<ValueAstNode> elementsAstNode = parseElements(level + 1);
+        List<ValueAstNode> elementsAstNode = parseElements(level + 2);
         if (elementsAstNode == null) {
             error();
         }

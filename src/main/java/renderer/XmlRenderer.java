@@ -11,6 +11,7 @@ import parser.ast.ValueAstNode;
 
 import java.util.Arrays;
 
+// FIXME excessive indent for case array(X, ObjectAstNode)
 public class XmlRenderer implements Renderer {
 
     public String renderWrapper(ObjectAstNode node) {
@@ -66,7 +67,11 @@ public class XmlRenderer implements Renderer {
                     || val.getValue() instanceof ArrayAstNode) {
                 sb.append("\n");
             }
-            sb.append(render(val.getValue()));
+            if (val.getValue() instanceof ArrayAstNode) {
+                sb.append(render((ArrayAstNode) val.getValue(), key));
+            } else {
+                sb.append(render(val.getValue()));
+            }
             if (val.getValue() instanceof ObjectAstNode
                     || val.getValue() instanceof ArrayAstNode) {
                 sb.append(node.printIndent());

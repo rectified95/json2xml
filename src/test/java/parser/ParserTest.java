@@ -7,6 +7,7 @@ import org.junit.jupiter.api.function.Executable;
 import lexer.source.impl.StringSource;
 import lexer.tokenizer.Tokenizer;
 import lexer.tokenizer.token.TokenType;
+import renderer.XmlRenderer;
 
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -99,6 +100,8 @@ public class ParserTest {
         Parser parser = new Parser(tokenizer);
         ObjectAstNode objectAstNode = parser.parse();
         System.out.println(objectAstNode);
+        XmlRenderer r = new XmlRenderer();
+        r.renderWrapper(objectAstNode);
         assertTrue(objectAstNode != null);
     }
 
