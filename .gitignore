@@ -1,4 +1,6 @@
 out/
+*.iml
+build/
 .*/
 *.class
 gradlew
