@@ -14,7 +14,7 @@ public class ParserWrapper {
         Tokenizer tokenizer = new Tokenizer(new StringSource());
         ((StringSource) tokenizer.getSource()).setInputString(
                 "{\"objectKey\":{\"a\":\"AAA\","
-                        + "\"XD\":\"HAHA\", \"ar\":[1, 2, 3]}}"
+                        + "\"XD\":\"HAHA\", \"ar\":[{\"1\":1}, 2, 3]}}"
         );
         Parser parser = new Parser(tokenizer);
         ObjectAstNode objectAstNode = parser.parse();

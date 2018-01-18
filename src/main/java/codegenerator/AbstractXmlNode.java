@@ -19,4 +19,10 @@ public abstract class AbstractXmlNode {
     private XmlNode parent;
     private String name;
     private int indent;
+
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+        return sb.toString();
+    }
 }
