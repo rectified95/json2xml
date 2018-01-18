@@ -1,4 +1,4 @@
-package renderer;
+package codegenerator;
 
 public interface Renderer {
 }

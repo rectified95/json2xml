@@ -18,10 +18,26 @@ apply plugin: 'java'
 apply plugin: 'idea'
 apply plugin: 'org.junit.platform.gradle.plugin'
 
+buildscript {
+    repositories {
+        maven {
+            url "https://plugins.gradle.org/m2/"
+        }
+    }
+    dependencies {
+        classpath "io.franzbecker:gradle-lombok:1.11"
+    }
+}
+
+apply plugin: "io.franzbecker.gradle-lombok"
+
 sourceCompatibility = 1.8
 targetCompatibility = 1.8
 
-
+lombok {
+    version = 1.16.20
+    sha256 = ""
+}
 
 dependencies {
     testCompile(

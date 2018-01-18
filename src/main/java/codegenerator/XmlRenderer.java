@@ -1,4 +1,4 @@
-package renderer;
+package codegenerator;
 
 import lexer.source.impl.StringSource;
 import lexer.tokenizer.Tokenizer;
