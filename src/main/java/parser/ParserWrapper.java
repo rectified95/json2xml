@@ -1,10 +1,10 @@
 package parser;
 
 import codegenerator.AbstractXmlNode;
-import codegenerator.XmlGenerator;
-import parser.ast.ObjectAstNode;
+import codegenerator.XmlTreeGenerator;
 import lexer.source.impl.StringSource;
 import lexer.tokenizer.Tokenizer;
+import parser.ast.ObjectAstNode;
 
 /**
  * Created by Igor Klemenski on 04.01.18.
@@ -19,10 +19,10 @@ public class ParserWrapper {
         Parser parser = new Parser(tokenizer);
         ObjectAstNode objectAstNode = parser.parse();
         System.out.println(objectAstNode);
-//        XmlRenderer r = new XmlRenderer();
-//        r.renderWrapper(objectAstNode);
-        XmlGenerator xmlGenerator = new XmlGenerator();
-        AbstractXmlNode xmlNode = xmlGenerator.generate(objectAstNode);
+        XmlTreeGenerator xmlTreeGenerator = new XmlTreeGenerator();
+        AbstractXmlNode xmlNode = xmlTreeGenerator.generate(objectAstNode);
+        // TODO consider changing xmlgen to static methods
+        System.out.println(xmlNode);
         int i=0;
     }
 }

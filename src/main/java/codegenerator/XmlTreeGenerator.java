@@ -7,7 +7,7 @@ import java.util.List;
 /**
  * Created by Igor Klemenski on 18.01.18.
  */
-public class XmlGenerator {
+public class XmlTreeGenerator {
     private static final String ARRAY_NAME_SUFFIX = "Array";
     // TODO na to cale gowno z instanceof przydalby sie jakis wrapper dla kazdego noda z jednolitym interfejsem
     public AbstractXmlNode generate(ObjectAstNode jsonNode) {
@@ -20,10 +20,10 @@ public class XmlGenerator {
     }
 
     private AbstractXmlNode generateXmlTagFromJsonPair(PairAstNode jsonPair, int indent) {
-        // TODO poustawiac name etc.
-        AbstractXmlNode xmlNode = generateXmlTagFromJsonValue(jsonPair.getValue(), jsonPair.getKey().getValue(), indent + 1);
+        AbstractXmlNode xmlNode = generateXmlTagFromJsonValue(jsonPair.getValue(), jsonPair.getKey().getValue(), indent);
         if (xmlNode != null) {
             xmlNode.setName(jsonPair.getKey().getValue());
+            xmlNode.setIndent(indent);
         }
         // NULLABLE
         return xmlNode;
@@ -33,11 +33,13 @@ public class XmlGenerator {
         XmlLeafNode leafNode = generateSimpleXmlTag(astNode.getValue(), indent);
         if (leafNode != null) {
             leafNode.setName(tagName);
+            leafNode.setIndent(indent);
             return leafNode;
         }
         XmlNode xmlNode = generateNestedXmlTag(astNode.getValue(), tagName, indent);
         xmlNode.getChildren().stream().forEach(c -> c.setParent(xmlNode));
         if (xmlNode != null) {
+            xmlNode.setIndent(indent);
             return xmlNode;
         }
         return null;
@@ -56,12 +58,13 @@ public class XmlGenerator {
 
     private <T extends AstNode> XmlNode generateNestedXmlTag(T astNode, String tagName, int indent) {
         if (astNode instanceof ObjectAstNode) {
-            XmlNode xmlNode = generateNestedXmlTagFromJsonObject((ObjectAstNode) astNode, indent + 1);
+            XmlNode xmlNode = generateNestedXmlTagFromJsonObject((ObjectAstNode) astNode, indent);
             xmlNode.setName(tagName);
+            xmlNode.setIndent(indent);
             return xmlNode;
         } else if (astNode instanceof ArrayAstNode) {
             // TODO troche słabo ze nie moge mie listy tagow tutaj tylko owrapowane :/
-            XmlNode xmlNode = generateNestedXmlTagFromJsonArray((ArrayAstNode) astNode, tagName, indent + 1);
+            XmlNode xmlNode = generateNestedXmlTagFromJsonArray((ArrayAstNode) astNode, tagName, indent);
             return xmlNode;
         }
         return null;
@@ -71,7 +74,7 @@ public class XmlGenerator {
         XmlNode xmlNode = new XmlNode();
         List<AbstractXmlNode> xmlChildren = xmlNode.getChildren();
         for (PairAstNode jsonPair : jsonNode.getMembers()) {
-            xmlChildren.add(generateXmlTagFromJsonPair(jsonPair, indent));
+            xmlChildren.add(generateXmlTagFromJsonPair(jsonPair, indent + 1));
         }
         return xmlNode;
     }
@@ -81,7 +84,7 @@ public class XmlGenerator {
         List<AbstractXmlNode> xmlChildren = xmlNode.getChildren();
         List<ValueAstNode> jsonChildren = jsonNode.getChildren();
         for (ValueAstNode jsonValue: jsonChildren) {
-            xmlChildren.add(generateXmlTagFromJsonValue(jsonValue, tagName, indent));
+            xmlChildren.add(generateXmlTagFromJsonValue(jsonValue, tagName, indent + 1));
         }
         xmlNode.getChildren().stream().forEach(n -> n.setName(tagName + ARRAY_NAME_SUFFIX));
         return xmlNode;

@@ -15,14 +15,16 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 public abstract class AbstractXmlNode {
-    private List<XmlAttribute> attributes;
-    private XmlNode parent;
-    private String name;
-    private int indent;
+    protected List<XmlAttribute> attributes;
+    protected XmlNode parent;
+    protected String name;
+    protected int indent;
 
-    @Override
-    public String toString() {
+    protected String printIndent() {
         StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < indent; ++i) {
+            sb.append("    ");
+        }
         return sb.toString();
     }
 }
