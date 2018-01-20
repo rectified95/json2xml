@@ -13,7 +13,7 @@ public class ParserWrapper {
     public static void main(String[] a) {
         Tokenizer tokenizer = new Tokenizer(new StringSource());
         ((StringSource) tokenizer.getSource()).setInputString(
-                "{\"objectKey\":{\"a\":\"AAA\","
+                "{\"objectKey\":{\"a\":\"AAA\", \"b\":\"BBB\","
                         + "\"XD\":\"HAHA\", \"ar\":[{\"1\":1}, 2, 3]}}"
         );
         Parser parser = new Parser(tokenizer);

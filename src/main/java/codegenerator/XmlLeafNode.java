@@ -3,13 +3,20 @@ package codegenerator;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
+import java.util.ArrayList;
+import java.util.Collections;
+
 /**
  * Created by Igor Klemenski on 18.01.18.
  */
 @Getter
-@AllArgsConstructor
 public class XmlLeafNode extends AbstractXmlNode {
     private String nodeContent;
+
+    public XmlLeafNode(String nodeContent) {
+        this.nodeContent = nodeContent;
+        this.children = Collections.unmodifiableList(Collections.emptyList());
+    }
 
     @Override
     public String toString() {

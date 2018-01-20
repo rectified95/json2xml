@@ -22,6 +22,7 @@ public class ObjectAstNode extends AstNode {
         return members;
     }
 
+    // TODO zmienic zeby toString wypisywalo zawartosc a dodac metode na wypisywanie tylko typow AST Node
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();

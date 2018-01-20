@@ -5,6 +5,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.LinkedList;
 import java.util.List;
 
 /**
@@ -15,6 +16,7 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 public abstract class AbstractXmlNode {
+    protected List<AbstractXmlNode> children = new LinkedList<>();
     protected List<XmlAttribute> attributes;
     protected XmlNode parent;
     protected String name;

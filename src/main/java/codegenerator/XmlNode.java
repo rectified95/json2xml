@@ -16,8 +16,7 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 public class XmlNode extends AbstractXmlNode {
-    private List<AbstractXmlNode> children = new LinkedList<>();
-    private List<XmlAttribute> attributes;
+    private List<XmlAttribute> attributes = new LinkedList<>();
     private String name;
     private String value;
 
@@ -25,8 +24,11 @@ public class XmlNode extends AbstractXmlNode {
     public String toString() {
         StringBuilder sb = new StringBuilder();
         sb.append(printIndent());
-        // TODO add attribute rendering
-        sb.append("<" + name + ">\n");
+        sb.append("<" + name);
+        for (XmlAttribute attribute : attributes) {
+            sb.append(attribute.toString());
+        }
+        sb.append(">\n");
         for (AbstractXmlNode childNode : children) {
             sb.append(childNode.toString());
         }
