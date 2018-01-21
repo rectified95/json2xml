@@ -2,6 +2,7 @@ package codegenerator;
 
 import lexer.source.impl.StringSource;
 import lexer.tokenizer.Tokenizer;
+import lombok.extern.slf4j.Slf4j;
 import parser.Parser;
 import parser.ast.*;
 
@@ -11,32 +12,33 @@ import java.util.List;
 /**
  * Created by Igor Klemenski on 18.01.18.
  */
+@Slf4j
 public class XmlTreeGenerator {
     private static final String ARRAY_NAME_SUFFIX = "Array";
-    private XmlNode xmlTree;
-    // TODO na to cale gowno z instanceof przydalby sie jakis wrapper dla kazdego noda z jednolitym interfejsem
-    public AbstractXmlNode generate(ObjectAstNode jsonNode) {
+    private static final String SKIP_RULE_LABEL = "SKIP";
+    private static final String ATTRIBUTE_RULE_LABEL = "ATTRIBUTE";
+
+    public static AbstractXmlNode generate(ObjectAstNode jsonNode, String configString) {
         XmlNode node = (XmlNode) generateXmlTagFromJsonPair(new PairAstNode(
                 new StringAstNode("root"), new ValueAstNode(jsonNode)), 0);
         node.setIndent(0);
         node.getChildren().stream().forEach(c -> c.setParent(node));
         node.setParent(null);
-        this.xmlTree = node;
-        applyConfiguration();
+        ObjectAstNode configNode = new Parser(new Tokenizer(new StringSource(configString))).parse();
+        applyConfiguration(node, configNode);
         return node;
     }
 
-    private AbstractXmlNode generateXmlTagFromJsonPair(PairAstNode jsonPair, int indent) {
+    private static AbstractXmlNode generateXmlTagFromJsonPair(PairAstNode jsonPair, int indent) {
         AbstractXmlNode xmlNode = generateXmlTagFromJsonValue(jsonPair.getValue(), jsonPair.getKey().getValue(), indent);
         if (xmlNode != null) {
             xmlNode.setName(jsonPair.getKey().getValue());
             xmlNode.setIndent(indent);
         }
-        // NULLABLE
         return xmlNode;
     }
 
-    private AbstractXmlNode generateXmlTagFromJsonValue(ValueAstNode astNode, String tagName, int indent) {
+    private static AbstractXmlNode generateXmlTagFromJsonValue(ValueAstNode astNode, String tagName, int indent) {
         XmlLeafNode leafNode = generateSimpleXmlTag(astNode.getValue(), indent);
         if (leafNode != null) {
             leafNode.setName(tagName);
@@ -52,7 +54,7 @@ public class XmlTreeGenerator {
         return null;
     }
 
-    private <T extends AstNode> XmlLeafNode generateSimpleXmlTag(T astNode, int indent) {
+    private static <T extends AstNode> XmlLeafNode generateSimpleXmlTag(T astNode, int indent) {
         if (astNode instanceof StringAstNode) {
             return new XmlLeafNode(((StringAstNode) astNode).getValue());
         } else if (astNode instanceof NumberAstNode) {
@@ -63,21 +65,20 @@ public class XmlTreeGenerator {
         return null;
     }
 
-    private <T extends AstNode> XmlNode generateNestedXmlTag(T astNode, String tagName, int indent) {
+    private static <T extends AstNode> XmlNode generateNestedXmlTag(T astNode, String tagName, int indent) {
         if (astNode instanceof ObjectAstNode) {
             XmlNode xmlNode = generateNestedXmlTagFromJsonObject((ObjectAstNode) astNode, indent);
             xmlNode.setName(tagName);
             xmlNode.setIndent(indent);
             return xmlNode;
         } else if (astNode instanceof ArrayAstNode) {
-            // TODO troche słabo ze nie moge mie listy tagow tutaj tylko owrapowane :/
             XmlNode xmlNode = generateNestedXmlTagFromJsonArray((ArrayAstNode) astNode, tagName, indent);
             return xmlNode;
         }
         return null;
     }
 
-    private XmlNode generateNestedXmlTagFromJsonObject(ObjectAstNode jsonNode, int indent) {
+    private static XmlNode generateNestedXmlTagFromJsonObject(ObjectAstNode jsonNode, int indent) {
         XmlNode xmlNode = new XmlNode();
         List<AbstractXmlNode> xmlChildren = xmlNode.getChildren();
         for (PairAstNode jsonPair : jsonNode.getMembers()) {
@@ -86,7 +87,7 @@ public class XmlTreeGenerator {
         return xmlNode;
     }
 
-    private XmlNode generateNestedXmlTagFromJsonArray(ArrayAstNode jsonNode, String tagName, int indent) {
+    private static XmlNode generateNestedXmlTagFromJsonArray(ArrayAstNode jsonNode, String tagName, int indent) {
         XmlNode xmlNode = new XmlNode();
         List<AbstractXmlNode> xmlChildren = xmlNode.getChildren();
         List<ValueAstNode> jsonChildren = jsonNode.getChildren();
@@ -97,40 +98,35 @@ public class XmlTreeGenerator {
         return xmlNode;
     }
 
-    private void applyConfiguration() {
-        String config = "{\"root.objectKey.a\":\"ATTRIBUTE\", \"root.objectKey.b\":\"ATTRIBUTE\", \"root.objectKey.XD\":\"SKIP\"}";
-        ObjectAstNode configNode = new Parser(new Tokenizer(new StringSource(config))).parse();
+    private static void applyConfiguration(XmlNode xmlTree, ObjectAstNode configNode) {
         for (PairAstNode pair : configNode.getMembers()) {
             AbstractXmlNode xmlNode = findXmlNode(xmlTree, pair.getKey().getValue().split("\\."));
             if (xmlNode == null) {
-                System.out.println("node not found, ignoring rule: " + pair.getKey().getValue()
+                log.warn("node not found, ignoring rule: " + pair.getKey().getValue()
                         + " " + ((StringAstNode) pair.getValue().getValue()).getValue());
                 continue;
             }
             String ruleValue = ((StringAstNode) pair.getValue().getValue()).getValue();
-            if (ruleValue.equals("SKIP")) {
+            if (ruleValue.equals(SKIP_RULE_LABEL)) {
                 xmlNode.getParent().getChildren().remove(xmlNode);
-            } else if (ruleValue.equals("ATTRIBUTE")) {
+            } else if (ruleValue.equals(ATTRIBUTE_RULE_LABEL)) {
                 if (xmlNode instanceof XmlLeafNode) {
                     xmlNode.getParent().getAttributes().add(new XmlAttribute(
                             xmlNode.getName(), ((XmlLeafNode) xmlNode).getNodeContent()));
                     xmlNode.getParent().getChildren().remove(xmlNode);
                 } else {
-                    System.out.println("cannot use non-leaf node as tag attribute, ignoring rule: " + pair.getKey().getValue()
+                    log.warn("cannot use non-leaf node as tag attribute, ignoring rule: " + pair.getKey().getValue()
                             + " " + ((StringAstNode) pair.getValue().getValue()).getValue());
                 }
+            } else if (ruleValue.split(":")[0].equals("RENAME")) {
+                xmlNode.setName(ruleValue.split(":")[1]);
             }
         }
     }
 
-    private AbstractXmlNode findXmlNode(AbstractXmlNode node, String[] nodePath) {
-        // todo <~> check for nodePath being null or empty
-        if (nodePath.length == 1) {
-            if (node.getName().equals(nodePath[0])) {
-                return node;
-            } else {
-                return null;
-            }
+    private static AbstractXmlNode findXmlNode(AbstractXmlNode node, String[] nodePath) {
+        if (nodePath.length == 1 && node.getName().equals(nodePath[0])) {
+            return node;
         } else if (nodePath.length > 1) {
             if (node.getName().equals(nodePath[0])) {
                 AbstractXmlNode xmlNode;
@@ -139,7 +135,6 @@ public class XmlTreeGenerator {
                         return xmlNode;
                     }
                 }
-                return null;
             }
         }
         return null;

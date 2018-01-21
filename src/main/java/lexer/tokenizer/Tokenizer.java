@@ -20,8 +20,6 @@ public class Tokenizer {
     public static final Map<Character, TokenType> tokenMap;
     private Map<Character, Matcher> matcherMap = new HashMap<>();
     private Source source;
-    // FIXME remove cur oken - only to be maintained i PARSER
-    private Token curToken;
     private char currentChar;
 
     static {
@@ -54,16 +52,7 @@ public class Tokenizer {
         if (matcher == null) {
             throw new TokenizerException("cannot recognize token - invalid input");
         }
-        curToken = matcher.match(source);
-        return curToken;
-    }
-
-    public Token getCurToken() {
-        return curToken;
-    }
-
-    public String getNextTokenValue() {
-        return getNextToken().getValue();
+        return matcher.match(source);
     }
 
     private void initializeMatcherMap() {

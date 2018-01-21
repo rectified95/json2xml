@@ -248,7 +248,7 @@ public class TokenizerTest {
     void shouldTokenizeFromFile() {
         try {
             Tokenizer tokenizer = new Tokenizer(new FileSource(
-                    "/home/iklemenski/projects/json2xml/src/test/java/lexer/test.json")
+                    "/home/igor/Documents/projects/json2xml/src/test/java/lexer/test.json")
             );
             tokenizer.tokenize().stream().forEach(System.out::println);
         } catch (IOException | URISyntaxException e) {

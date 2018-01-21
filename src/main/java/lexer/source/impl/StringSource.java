@@ -8,9 +8,8 @@ import lexer.tokenizer.exception.TokenizerException;
  */
 public class StringSource implements Source {
     private int inputIdx = -1;
-    // TODO make private and check if all works as before
-    public int lineNumber = 1;
-    public int lineIdx = 1;
+    private int lineNumber = 1;
+    private int lineIdx = 1;
     private int curLen;
 
     private String inputString;
