@@ -12,10 +12,10 @@ import parser.ast.ObjectAstNode;
  */
 public class ConversionRunner {
     public static void main(String[] a) {
-        String configString = "{\"root.objectKey.a\":\"RENAME:renamed_attr\", \"root.objectKey.b\":\"ATTRIBUTE\"," +
+        String configString = "{\"root.objectKey.a\":\"ATTRIBUTE\", \"root.objectKey.b\":\"ATTRIBUTE\"," +
                 " \"root.objectKey.XD\":\"SKIP\", \"root.objectKey.ar\":\"ATTRIBUTE\"," +
-                " \"root.objectKey.XYZ\":\"SKIP\"}";
-        String jsonString = "{\"objectKey\":{\"a\":\"AAA\", \"b\":\"BBB\","
+                " \"root.objectKey.XYZ\":\"SKIP\",\"root.objectKey.c\":\"RENAME:renamed_attr_C\"}";
+        String jsonString = "{\"objectKey\":{\"a\":\"AAA\", \"b\":\"BBB\",\"c\":\"CCC\","
                 + "\"XD\":\"HAHA\", \"ar\":[{\"one\":1}, 2, 3]}}";
         Tokenizer tokenizer = new Tokenizer(new StringSource(jsonString));
         Parser parser = new Parser(tokenizer);

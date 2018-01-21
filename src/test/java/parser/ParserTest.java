@@ -100,8 +100,7 @@ public class ParserTest {
         Parser parser = new Parser(tokenizer);
         ObjectAstNode objectAstNode = parser.parse();
         System.out.println(objectAstNode);
-        XmlTreeGenerator r = new XmlTreeGenerator();
-        r.generate(objectAstNode);
+        XmlTreeGenerator.generate(objectAstNode, "{}");
         assertTrue(objectAstNode != null);
     }
 

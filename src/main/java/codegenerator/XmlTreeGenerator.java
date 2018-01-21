@@ -16,7 +16,15 @@ import java.util.List;
 public class XmlTreeGenerator {
     private static final String ARRAY_NAME_SUFFIX = "Array";
     private static final String SKIP_RULE_LABEL = "SKIP";
+    private static final String RENAME_RULE_LABEL = "RENAME";
     private static final String ATTRIBUTE_RULE_LABEL = "ATTRIBUTE";
+
+    private static final String RENAME_RULE_SEPARATOR = ":";
+    private static final String NODE_PATH_SEPARATOR_REGEX = "\\.";
+
+    private static final String NODE_NOT_FOUND_MSG_TEMPLATE = "node not found, ignoring rule: %s %s";
+    private static final String INVALID_RULE_NONLEAF_MSG_TEMPLATE =
+            "cannot use non-leaf node as tag attribute, ignoring rule: %s %s";
 
     public static AbstractXmlNode generate(ObjectAstNode jsonNode, String configString) {
         XmlNode node = (XmlNode) generateXmlTagFromJsonPair(new PairAstNode(
@@ -100,26 +108,18 @@ public class XmlTreeGenerator {
 
     private static void applyConfiguration(XmlNode xmlTree, ObjectAstNode configNode) {
         for (PairAstNode pair : configNode.getMembers()) {
-            AbstractXmlNode xmlNode = findXmlNode(xmlTree, pair.getKey().getValue().split("\\."));
+            AbstractXmlNode xmlNode = findXmlNode(xmlTree, pair.getKey().getValue().split(NODE_PATH_SEPARATOR_REGEX));
+            String ruleValue = ((StringAstNode) pair.getValue().getValue()).getValue();
             if (xmlNode == null) {
-                log.warn("node not found, ignoring rule: " + pair.getKey().getValue()
-                        + " " + ((StringAstNode) pair.getValue().getValue()).getValue());
+                log.warn(String.format(NODE_NOT_FOUND_MSG_TEMPLATE, pair.getKey().getValue(), ruleValue));
                 continue;
             }
-            String ruleValue = ((StringAstNode) pair.getValue().getValue()).getValue();
             if (ruleValue.equals(SKIP_RULE_LABEL)) {
-                xmlNode.getParent().getChildren().remove(xmlNode);
+                applyRuleSkip(xmlNode);
             } else if (ruleValue.equals(ATTRIBUTE_RULE_LABEL)) {
-                if (xmlNode instanceof XmlLeafNode) {
-                    xmlNode.getParent().getAttributes().add(new XmlAttribute(
-                            xmlNode.getName(), ((XmlLeafNode) xmlNode).getNodeContent()));
-                    xmlNode.getParent().getChildren().remove(xmlNode);
-                } else {
-                    log.warn("cannot use non-leaf node as tag attribute, ignoring rule: " + pair.getKey().getValue()
-                            + " " + ((StringAstNode) pair.getValue().getValue()).getValue());
-                }
-            } else if (ruleValue.split(":")[0].equals("RENAME")) {
-                xmlNode.setName(ruleValue.split(":")[1]);
+                applyRuleAttribute(xmlNode, pair, ruleValue);
+            } else {
+                applyRuleRename(xmlNode, ruleValue);
             }
         }
     }
@@ -129,14 +129,35 @@ public class XmlTreeGenerator {
             return node;
         } else if (nodePath.length > 1) {
             if (node.getName().equals(nodePath[0])) {
-                AbstractXmlNode xmlNode;
                 for (AbstractXmlNode child : node.getChildren()) {
-                    if ((xmlNode = findXmlNode(child, Arrays.copyOfRange(nodePath, 1, nodePath.length))) != null) {
+                    AbstractXmlNode xmlNode = findXmlNode(child, Arrays.copyOfRange(nodePath, 1, nodePath.length));
+                    if (xmlNode != null) {
                         return xmlNode;
                     }
                 }
             }
         }
         return null;
+    }
+
+    private static void applyRuleAttribute(AbstractXmlNode xmlNode, PairAstNode pair, String ruleValue) {
+        if (xmlNode instanceof XmlLeafNode) {
+            xmlNode.getParent().getAttributes().add(new XmlAttribute(
+                    xmlNode.getName(), ((XmlLeafNode) xmlNode).getNodeContent()));
+            xmlNode.getParent().getChildren().remove(xmlNode);
+        } else {
+            log.warn(String.format(INVALID_RULE_NONLEAF_MSG_TEMPLATE, pair.getKey().getValue(), ruleValue));
+        }
+    }
+
+    private static void applyRuleRename(AbstractXmlNode xmlNode, String ruleValue) {
+        String[] renameRuleElements = ruleValue.split(RENAME_RULE_SEPARATOR);
+        if (renameRuleElements[0].equals(RENAME_RULE_LABEL)) {
+            xmlNode.setName(ruleValue.split(RENAME_RULE_SEPARATOR)[1]);
+        }
+    }
+
+    private static void applyRuleSkip(AbstractXmlNode xmlNode) {
+        xmlNode.getParent().getChildren().remove(xmlNode);
     }
 }
