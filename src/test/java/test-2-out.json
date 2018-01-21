@@ -1,0 +1,15 @@
+<root>
+    <objectKey a="AAA" b="BBB">
+        <renamed_attr_C>CCC</renamed_attr_C>
+        <ar>
+            <arArray>
+                <one>1</one>
+            </arArray>
+            <arArray>2</arArray>
+            <arArray>3</arArray>
+        </ar>
+    </objectKey>
+    <anotherObjectKey>
+        <someSubKey>:)</someSubKey>
+    </anotherObjectKey>
+</root>

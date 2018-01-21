@@ -1,0 +1,12 @@
+{
+  "objectKey" : {
+    "a" : "AAA",
+    "b":"BBB",
+    "c":"CCC",
+    "XD":"HAHA",
+    "ar": [{"one":1}, 2, 3]
+  },
+  "anotherObjectKey" : {
+    "someSubKey" : ":)"
+  }
+}

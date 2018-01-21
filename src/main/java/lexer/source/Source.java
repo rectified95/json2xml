@@ -10,7 +10,6 @@ public interface Source {
     boolean hasNext();
     boolean hasNextNonBlank();
     void reverseCursor();
-    void rollbackCursor();
     int getLineNumber();
     int getLineIdx();
 }

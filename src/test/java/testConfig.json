@@ -1,4 +1,8 @@
 {
-  "a": "SKIP",
-  "a.b": "SKIP"
+  "root.objectKey.a" : "ATTRIBUTE",
+  "root.objectKey.b" : "ATTRIBUTE",
+  "root.objectKey.XD" : "SKIP",
+  "root.objectKey.ar" : "ATTRIBUTE",
+  "root.objectKey.XYZ" : "SKIP",
+  "root.objectKey.c" : "RENAME:renamed_attr_C"
 }

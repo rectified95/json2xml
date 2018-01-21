@@ -17,7 +17,6 @@ public class FileSource implements Source {
 
     public FileSource(String filePath) throws IOException, URISyntaxException {
         source = new StringSource();
-//        fileString = new String(Files.readAllBytes(Paths.get(new URI("file:///" + filePath))));
         fileString = new String(Files.readAllBytes(Paths.get(filePath)));
         source.setInputString(fileString);
     }
@@ -50,11 +49,6 @@ public class FileSource implements Source {
     @Override
     public void reverseCursor() {
         source.reverseCursor();
-    }
-
-    @Override
-    public void rollbackCursor() {
-
     }
 
     @Override

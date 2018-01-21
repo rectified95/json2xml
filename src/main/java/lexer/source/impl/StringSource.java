@@ -86,11 +86,6 @@ public class StringSource implements Source {
         --this.lineIdx;
     }
 
-    @Override
-    public void rollbackCursor() {
-
-    }
-
     public void setInputString(String inputString) {
         this.inputString = inputString;
         this.curLen = inputString.length();
